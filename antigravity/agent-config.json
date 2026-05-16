@@ -1,0 +1,10 @@
+{
+  "agentName": "TutorSync Core Agent",
+  "version": "2.0.0",
+  "skills_directory": "./antigravity/skills",
+  "active_skills": [
+    "metadata-creator-skill.md",
+    "portal-auth-skill.md",
+    "ai-scheduler-ai-assistant-skill.md"
+  ]
+}

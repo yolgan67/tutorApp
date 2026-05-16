@@ -1,0 +1,90 @@
+<template>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar Navigation -->
+        <nav class="glass-sidebar">
+            <div class="logo">TutorSync</div>
+            <ul class="nav-links">
+                <li class="active"><a href="#">📊 Özet Paneli</a></li>
+                <li><a href="#">📅 Derslerim</a></li>
+                <li><a href="#">📚 Ödevlerim</a></li>
+                <li><a href="#">📝 Sınav Notlarım</a></li>
+            </ul>
+            <div class="bottom-action">
+                <button class="logout-btn" onclick={handleLogout}>🚪 Çıkış Yap</button>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <template if:true={isLoading}>
+                <div class="loader-container">
+                    <span class="loader"></span>
+                </div>
+            </template>
+
+            <template if:false={isLoading}>
+                <header class="top-header">
+                    <h1>Hoşgeldin, <span class="highlight">{studentName}</span> 👋</h1>
+                    <p class="subtitle">İşte güncel eğitim özetin.</p>
+                </header>
+
+                <!-- Metric Cards -->
+                <div class="metrics-grid">
+                    <div class="glass-metric-card">
+                        <div class="icon-box balance-icon">💳</div>
+                        <div class="metric-info">
+                            <h3>Kalan Bakiye</h3>
+                            <h2>{balance} TL</h2>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-metric-card">
+                        <div class="icon-box lesson-icon">🗓️</div>
+                        <div class="metric-info">
+                            <h3>Yaklaşan Ders</h3>
+                            <h2>{nextLessonDate}</h2>
+                            <p>{nextLessonBranch}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-metric-card">
+                        <div class="icon-box hw-icon">📝</div>
+                        <div class="metric-info">
+                            <h3>Bekleyen Ödev</h3>
+                            <h2>{pendingHomeworkCount}</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity / Lessons -->
+                <div class="activity-section">
+                    <div class="glass-panel">
+                        <h2>Yaklaşan Program</h2>
+                        <template if:true={hasLessons}>
+                            <ul class="lesson-list">
+                                <template for:each={lessons} for:item="lesson">
+                                    <li key={lesson.Id} class="lesson-item">
+                                        <div class="lesson-date">
+                                            <span class="day">{lesson.dayStr}</span>
+                                            <span class="month">{lesson.monthStr}</span>
+                                        </div>
+                                        <div class="lesson-details">
+                                            <h4>{lesson.Branch__c} Dersi</h4>
+                                            <p>⏳ {lesson.Duration_Minutes__c} Dakika</p>
+                                        </div>
+                                        <div class="lesson-status">
+                                            <span class="badge badge-scheduled">Planlandı</span>
+                                        </div>
+                                    </li>
+                                </template>
+                            </ul>
+                        </template>
+                        <template if:false={hasLessons}>
+                            <div class="empty-state">Yaklaşan ders planlaması bulunmuyor.</div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+        </main>
+    </div>
+</template>

@@ -1,0 +1,12 @@
+<template>
+    <div class="app-container">
+        <!-- Conditional Rendering based on Auth State -->
+        <template if:false={isAuthenticated}>
+            <c-portal-login onlogin={handleLogin}></c-portal-login>
+        </template>
+        
+        <template if:true={isAuthenticated}>
+            <c-portal-dashboard onlogout={handleLogout}></c-portal-dashboard>
+        </template>
+    </div>
+</template>

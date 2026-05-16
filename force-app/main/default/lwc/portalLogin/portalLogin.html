@@ -1,0 +1,38 @@
+<template>
+    <div class="login-wrapper">
+        <div class="login-glass-card">
+            <div class="brand">
+                <div class="logo"></div>
+                <h1>TutorSync</h1>
+                <p>Öğrenci Portalına Hoşgeldin</p>
+            </div>
+            
+            <template if:true={errorMsg}>
+                <div class="error-alert">
+                    {errorMsg}
+                </div>
+            </template>
+
+            <form class="login-form">
+                <div class="input-group">
+                    <label>E-posta Adresi</label>
+                    <input type="email" class="glass-input" placeholder="ornek@ogrenci.com" onchange={handleUsernameChange} required />
+                </div>
+                
+                <div class="input-group">
+                    <label>Şifre</label>
+                    <input type="password" class="glass-input" placeholder="••••••••" onchange={handlePasswordChange} required />
+                </div>
+                
+                <button class="glass-button" onclick={doLogin} disabled={isLoading}>
+                    <template if:true={isLoading}>
+                        <span class="loader"></span>
+                    </template>
+                    <template if:false={isLoading}>
+                        Giriş Yap
+                    </template>
+                </button>
+            </form>
+        </div>
+    </div>
+</template>

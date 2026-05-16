@@ -1,0 +1,57 @@
+<template>
+    <div class="calendar-wrapper slds-card">
+        <div class="header">
+            <h2><lightning-icon icon-name="standard:event" size="medium"></lightning-icon> Ders Takvimi</h2>
+            <div class="legend">
+                <span class="legend-item"><span class="dot dot-scheduled"></span> Planlandı</span>
+                <span class="legend-item"><span class="dot dot-completed"></span> Tamamlandı</span>
+                <span class="legend-item"><span class="dot dot-cancelled"></span> İptal</span>
+            </div>
+        </div>
+        
+        <div class="timeline">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Yükleniyor" size="medium"></lightning-spinner>
+            </template>
+            
+            <template if:false={isLoading}>
+                <template if:true={hasEvents}>
+                    <template for:each={groupedEvents} for:item="group">
+                        <div key={group.date} class="day-group">
+                            <div class="day-header">
+                                <div class="date-badge">
+                                    <span class="day">{group.dayNum}</span>
+                                    <span class="month">{group.monthStr}</span>
+                                </div>
+                                <span class="weekday">{group.weekdayStr}</span>
+                            </div>
+                            
+                            <div class="events-list">
+                                <template for:each={group.events} for:item="ev">
+                                    <div key={ev.Id} class="event-card" style={ev.styleString}>
+                                        <div class="time-block">
+                                            <strong>{ev.timeStr}</strong>
+                                            <span>{ev.durationStr}</span>
+                                        </div>
+                                        <div class="details">
+                                            <h3>{ev.title}</h3>
+                                            <p>Durum: {ev.status}</p>
+                                        </div>
+                                        <div class="actions">
+                                            <lightning-button-icon icon-name="utility:edit" variant="bare" alternative-text="Düzenle" class="slds-m-right_xx-small"></lightning-button-icon>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </template>
+                <template if:false={hasEvents}>
+                    <div class="empty-state">
+                        <p>Yaklaşan ders bulunmuyor.</p>
+                    </div>
+                </template>
+            </template>
+        </div>
+    </div>
+</template>
