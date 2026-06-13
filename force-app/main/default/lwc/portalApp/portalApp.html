@@ -1,12 +1,128 @@
 <template>
-    <div class="app-container">
-        <!-- Conditional Rendering based on Auth State -->
-        <template if:false={isAuthenticated}>
+  <div class="app-container">
+    <!-- 1. LANDING PAGE (Not Logged In & Modal Closed) -->
+    <template if:false={isAuthenticated}>
+      <!-- Elegant Warm Header -->
+      <header class="landing-header">
+        <div class="logo-container">
+          <span class="logo-icon">🌸</span>
+          <span class="logo-text">TutorSync</span>
+        </div>
+        <nav class="landing-nav">
+          <a href="#services" class="nav-link">Eğitimlerimiz</a>
+          <a href="#vision" class="nav-link">Yaklaşımımız</a>
+          <button class="btn-primary" onclick={openLogin}>Portal Girişi</button>
+        </nav>
+      </header>
+
+      <!-- Hero (Giriş) Bölümü -->
+      <section class="hero-section">
+        <div class="hero-content">
+          <div class="tagline">🌸 SEVGİYLE MATEMATİK & GELİŞİM ATÖLYESİ</div>
+          <h1 class="hero-title">
+            Matematiği Sevgiyle Öğreniyor, Geleceğe Güvenle
+            <span class="gradient-text">Adım Atıyoruz! 🌟</span>
+          </h1>
+          <p class="hero-description">
+            Her öğrencimin öğrenme yolculuğu benzersizdir! Matematik temellerini
+            neşeyle sağlamlaştırıyor, geometriyi şekillerin eğlenceli dünyasıyla
+            sevdiriyor ve kişiye özel rehberlikle başarıya giden yolda sevgiyle
+            eşlik ediyorum.
+          </p>
+          <div class="hero-actions">
+            <button class="btn-large" onclick={openLogin}>
+              Hemen Öğrenci & Veli Portalına Giriş Yapın
+            </button>
+          </div>
+        </div>
+        <div class="hero-badge-container">
+          <div class="hero-image-wrapper">
+            <div class="hero-image-bg-glow"></div>
+            <img
+              src={joyfulTutorUrl}
+              class="hero-image-tutor"
+              alt="Matematik ve Gelişim Atölyesi"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- Hizmet Kartları Bölümü -->
+      <section id="services" class="features-section">
+        <h2 class="section-title">
+          Neler <span class="gradient-text">Yapıyoruz?</span>
+        </h2>
+        <div class="features-grid">
+          <!-- 5, 6, 7, 8, 9 Sınıf Matematik -->
+          <div class="feature-card glass-card">
+            <div class="feature-icon-wrapper">📚</div>
+            <h4>5, 6, 7, 8 ve 9. Sınıf Matematik</h4>
+            <p>
+              Temel matematik kavramlarını somutlaştırarak güçlendiriyor, LGS ve
+              okul sınavlarına neşeli, kaygısız ve kendinden emin yöntemlerle
+              hazırlanıyoruz.
+            </p>
+          </div>
+          <!-- Lise Geometri -->
+          <div class="feature-card glass-card">
+            <div class="feature-icon-wrapper">📐</div>
+            <h4>Lise Geometri Dersleri</h4>
+            <p>
+              Formülleri ezberlemek yerine şekillerin dünyasını keşfediyor;
+              TYT/AYT geometrisini korkulu rüya olmaktan çıkarıp eğlenceli bir
+              bulmacaya dönüştürüyoruz.
+            </p>
+          </div>
+          <!-- Kişisel Öğrenci Koçluğu -->
+          <div class="feature-card glass-card">
+            <div class="feature-icon-wrapper">✨</div>
+            <h4>Kişisel Öğrenci Koçluğu</h4>
+            <p>
+              Sadece ders anlatmıyoruz! Haftalık planlama, sınav stratejileri,
+              motivasyon takipleri ve gelişim analizi ile hedeflere adım adım
+              sevgi dolu bir rehberlikle ilerliyoruz.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Modern Samimi Footer -->
+      <footer class="landing-footer">
+        <p>
+          &copy; 2026 TutorSync - Matematik Özel Ders & Bireysel Gelişim
+          Atölyesi. Tüm Hakları Saklıdır. Geleceğe güvenle ve neşeyle adım atın.
+        </p>
+      </footer>
+
+      <!-- 2. LOGIN MODAL OVERLAY -->
+      <template if:true={showLoginModal}>
+        <div class="modal-overlay" onclick={closeLogin}>
+          <div
+            class="modal-content glass-card animate-zoom"
+            onclick={stopPropagation}
+          >
+            <button class="modal-close" onclick={closeLogin}>&times;</button>
             <c-portal-login onlogin={handleLogin}></c-portal-login>
-        </template>
-        
-        <template if:true={isAuthenticated}>
-            <c-portal-dashboard onlogout={handleLogout}></c-portal-dashboard>
-        </template>
-    </div>
+          </div>
+        </div>
+      </template>
+    </template>
+
+    <!-- 3. ROLE-BASED DASHBOARDS (Logged In) -->
+    <template if:true={isAuthenticated}>
+      <template if:true={isStudent}>
+        <c-portal-dashboard onlogout={handleLogout}></c-portal-dashboard>
+      </template>
+      <template if:true={isTeacher}>
+        <c-tutor-portal-dashboard
+          onlogout={handleLogout}
+        ></c-tutor-portal-dashboard>
+      </template>
+      <template if:true={isParent}>
+        <c-parent-portal-dashboard
+          onlogout={handleLogout}
+        ></c-parent-portal-dashboard>
+      </template>
+    </template>
+  </div>
 </template>

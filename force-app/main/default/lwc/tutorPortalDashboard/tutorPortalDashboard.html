@@ -1,0 +1,403 @@
+<template>
+    <div class="dashboard-wrapper">
+        <!-- ================= HEADER TOP BAR ================= -->
+        <header class="dashboard-header glass-card">
+            <div class="brand">
+                <span class="logo-emoji">📐</span>
+                <span class="brand-text">TutorSync <span class="role-lbl">Eğitmen</span></span>
+            </div>
+            <div class="header-nav">
+                <button class={calendarTabClass} onclick={selectCalendarTab}>📅 Ders Takvimi</button>
+                <button class={studentsTabClass} onclick={selectStudentsTab}>👥 Öğrenci Takibi</button>
+                <button class="btn-logout" onclick={handleLogout}>🚪 Çıkış Yap</button>
+            </div>
+        </header>
+
+        <!-- ================= MAIN DASHBOARD BODY ================= -->
+        <main class="dashboard-body">
+            <template if:true={isLoading}>
+                <div class="loader-container">
+                    <div class="custom-spinner"></div>
+                    <p class="loader-text">Öğrenci dosyaları yükleniyor...</p>
+                </div>
+            </template>
+
+            <template if:false={isLoading}>
+                <!-- ================= TAB 1: CALENDAR VIEW ================= -->
+                <template if:true={isCalendarTab}>
+                    <div class="tab-content animate-fade">
+                        <c-tutor-schedule-calendar></c-tutor-schedule-calendar>
+                    </div>
+                </template>
+
+                <!-- ================= TAB 2: STUDENTS PANELS ================= -->
+                <template if:true={isStudentsTab}>
+                    <div class="tab-content animate-fade">
+                        
+                        <!-- List View (No Student Selected) -->
+                        <template if:false={selectedStudent}>
+                            <div class="students-list-view">
+                                <h2 class="view-title">Kayıtlı Öğrenci Listesi</h2>
+                                <div class="students-grid">
+                                    <template for:each={students} for:item="student">
+                                        <div key={student.Id} class="student-card glass-card hover-glow" data-id={student.Id} onclick={handleStudentClick}>
+                                            <div class="student-avatar-box">👨‍🎓</div>
+                                            <div class="student-info">
+                                                <h3>{student.First_Name__c} {student.Last_Name__c}</h3>
+                                                <p class="school-lbl">🏫 {student.School__c}</p>
+                                                <span class="badge badge-mint-mini">{student.Grade__c}</span>
+                                            </div>
+                                            <div class="student-fin-stats">
+                                                <span class="lbl">Güncel Bakiye:</span>
+                                                <span class="val text-red font-bold">{student.Balance__c} TL</span>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Detail View (Student Selected) -->
+                        <template if:true={selectedStudent}>
+                            <div class="student-details-view animate-fade">
+                                <header class="details-top-nav">
+                                    <button class="btn-back" onclick={handleBackToList}>← Öğrenci Listesine Dön</button>
+                                    <div class="details-title-row">
+                                        <h2>{selectedStudent.First_Name__c} {selectedStudent.Last_Name__c}</h2>
+                                        <p class="fin-summary">
+                                            Ders Ücreti: <strong>{selectedStudent.Total_Lesson_Fee__c} TL</strong> | 
+                                            Ödenen: <strong>{selectedStudent.Total_Paid_Amount__c} TL</strong> | 
+                                            Kalan Bakiye: <strong class="text-red">{selectedStudent.Balance__c} TL</strong>
+                                        </p>
+                                    </div>
+                                </header>
+
+                                <!-- TWO-COLUMN DETAILED WORKSPACE -->
+                                <div class="details-workspace">
+                                    <!-- Column 1: Main Records (Left, 65% width) -->
+                                    <div class="main-workspace-col">
+                                        
+                                        <!-- Homeworks Card -->
+                                        <div class="detail-block-card glass-card">
+                                            <div class="block-header">
+                                                <h3>📚 Ödev Atamaları & Durumları</h3>
+                                                <button class="btn-primary-mini glow-effect" onclick={openHomeworkModal}>+ Yeni Ödev Ata</button>
+                                            </div>
+                                            <template if:true={studentDetails.homeworks.length}>
+                                                <div class="homeworks-list">
+                                                    <template for:each={studentDetails.homeworks} for:item="hw">
+                                                        <div key={hw.Id} class="hw-item-card glass-card">
+                                                            <div class="hw-item-header">
+                                                                <h4>{hw.Title__c}</h4>
+                                                                <span class={hw.badgeClass}>{hw.statusText}</span>
+                                                            </div>
+                                                            <p class="hw-item-desc">{hw.Description__c}</p>
+                                                            <div class="hw-item-meta">
+                                                                <span> Son Teslim: {hw.Due_Date__c}</span>
+                                                                <span> Ders: {hw.Lesson__r.Branch__c}</span>
+                                                            </div>
+
+                                                            <!-- Student Solution Stats -->
+                                                            <template if:true={hw.Completed_Questions__c}>
+                                                                <div class="hw-student-report">
+                                                                    <h5>Öğrenci Teslim Verisi:</h5>
+                                                                    <div class="stats-row">
+                                                                        <span>📊 Çözülen: <strong>{hw.Completed_Questions__c}</strong></span>
+                                                                        <span class="text-green font-bold">✔️ Doğru: {hw.Correct_Answers__c}</span>
+                                                                        <span class="text-red font-bold">❌ Yanlış: {hw.Wrong_Answers__c}</span>
+                                                                    </div>
+                                                                    <template if:true={hw.Student_Comment__c}>
+                                                                        <p class="comment-lbl"><strong>Öğrenci Yorumu:</strong> "{hw.Student_Comment__c}"</p>
+                                                                    </template>
+                                                                </div>
+                                                            </template>
+
+                                                            <!-- Grading Status -->
+                                                            <template if:true={hw.isGraded}>
+                                                                <div class="hw-grading-report">
+                                                                    <h5>Eğitmen Değerlendirmesi:</h5>
+                                                                    <p class="grade-pnl">💯 Puan: <strong>{hw.Grade__c} / 100</strong></p>
+                                                                    <template if:true={hw.Teacher_Comment__c}>
+                                                                        <p class="comment-lbl"><strong>Geri Bildiriminiz:</strong> "{hw.Teacher_Comment__c}"</p>
+                                                                    </template>
+                                                                </div>
+                                                            </template>
+
+                                                            <!-- Action to Grade -->
+                                                            <template if:true={hw.isSubmitted}>
+                                                                <div class="hw-actions">
+                                                                    <button class="btn-grade glow-effect" data-id={hw.Id} onclick={openGradeModal}>✏️ Ödevi Değerlendir</button>
+                                                                </div>
+                                                            </template>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </template>
+                                            <template if:false={studentDetails.homeworks.length}>
+                                                <p class="empty-lbl">Kayıtlı ödev bulunmuyor.</p>
+                                            </template>
+                                        </div>
+
+                                        <!-- Lessons Card -->
+                                        <div class="detail-block-card glass-card mt-4">
+                                            <h3>📅 Ders Geçmişi & Planları</h3>
+                                            <div class="lessons-tables-row">
+                                                <!-- Future Lessons -->
+                                                <div class="lessons-sub-panel">
+                                                    <h4>Planlanan Yaklaşan Dersler</h4>
+                                                    <template if:true={studentDetails.futureLessons.length}>
+                                                        <ul class="lesson-items-list">
+                                                            <template for:each={studentDetails.futureLessons} for:item="lesson">
+                                                                <li key={lesson.Id} class="lesson-li">
+                                                                    <span>📐 <strong>{lesson.Branch__c} Dersi</strong></span>
+                                                                    <span class="time">{lesson.Date_Time__c} ({lesson.Duration_Minutes__c} Dk)</span>
+                                                                    <span class="badge badge-mint-mini">Planlandı</span>
+                                                                </li>
+                                                            </template>
+                                                        </ul>
+                                                    </template>
+                                                    <template if:false={studentDetails.futureLessons.length}>
+                                                        <p class="empty-lbl">Yaklaşan ders bulunmuyor.</p>
+                                                    </template>
+                                                </div>
+
+                                                <!-- Past Lessons -->
+                                                <div class="lessons-sub-panel">
+                                                    <h4>Tamamlanmış Geçmiş Dersler</h4>
+                                                    <template if:true={studentDetails.pastLessons.length}>
+                                                        <ul class="lesson-items-list">
+                                                            <template for:each={studentDetails.pastLessons} for:item="lesson">
+                                                                <li key={lesson.Id} class="lesson-li">
+                                                                    <span>📐 <strong>{lesson.Branch__c} Dersi</strong></span>
+                                                                    <span class="time">{lesson.Date_Time__c} ({lesson.Duration_Minutes__c} Dk)</span>
+                                                                    <span class="fee font-bold text-teal">{lesson.feeFormatted} TL</span>
+                                                                </li>
+                                                            </template>
+                                                        </ul>
+                                                    </template>
+                                                    <template if:false={studentDetails.pastLessons.length}>
+                                                        <p class="empty-lbl">Geçmiş ders kaydı bulunmuyor.</p>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Payments Block -->
+                                        <div class="detail-block-card glass-card mt-4">
+                                            <div class="block-header">
+                                                <h3>💳 Ödeme Tahsilat Kayıtları</h3>
+                                                <button class="btn-primary-mini glow-effect" onclick={openPaymentModal}>+ Yeni Ödeme Tahsil Et</button>
+                                            </div>
+                                            <template if:true={studentDetails.payments.length}>
+                                                <div class="table-responsive">
+                                                    <table class="premium-table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Ödeme Adı</th>
+                                                                <th>Ödeme Tarihi</th>
+                                                                <th>Yöntem</th>
+                                                                <th>Tutar</th>
+                                                                <th>Durum</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <template for:each={studentDetails.payments} for:item="payment">
+                                                                <tr key={payment.Id}>
+                                                                    <td class="font-bold">{payment.Name}</td>
+                                                                    <td>{payment.Payment_Date__c}</td>
+                                                                    <td>{payment.Payment_Method__c}</td>
+                                                                    <td class="font-bold text-green">{payment.amountFormatted} TL</td>
+                                                                    <td>
+                                                                        <span class="badge badge-mint-mini">{payment.Status__c}</span>
+                                                                    </td>
+                                                                </tr>
+                                                            </template>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </template>
+                                            <template if:false={studentDetails.payments.length}>
+                                                <p class="empty-lbl">Kayıtlı ödeme tahsilatı bulunmuyor.</p>
+                                            </template>
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Column 2: Sticky Sidebar Information (Right, 35% width) -->
+                                    <div class="sticky-sidebar-col">
+                                        <!-- Sticky Info Card -->
+                                        <div class="student-profile-sticky-card glass-card">
+                                            <div class="card-avatar">👨‍🎓</div>
+                                            <h3>Öğrenci & Veli Bilgileri</h3>
+                                            
+                                            <div class="info-list">
+                                                <div class="info-row">
+                                                    <span class="lbl">Sınıf / Seviye:</span>
+                                                    <span class="val font-bold text-teal">{selectedStudent.Grade__c}</span>
+                                                </div>
+                                                <div class="info-row">
+                                                    <span class="lbl">Okul Bilgisi:</span>
+                                                    <span class="val font-bold">{selectedStudent.School__c}</span>
+                                                </div>
+                                                <div class="info-row">
+                                                    <span class="lbl">Sisteme Kayıt:</span>
+                                                    <span class="val">{studentDetails.regDate}</span>
+                                                </div>
+                                                
+                                                <div class="parent-divider"></div>
+                                                
+                                                <div class="info-row">
+                                                    <span class="lbl">Veli Adı Soyadı:</span>
+                                                    <span class="val font-bold">{studentDetails.parentName}</span>
+                                                </div>
+                                                <div class="info-row">
+                                                    <span class="lbl">Veli Telefonu:</span>
+                                                    <span class="val font-bold text-blue">{studentDetails.parentPhone}</span>
+                                                </div>
+                                                <div class="info-row">
+                                                    <span class="lbl">Veli E-postası:</span>
+                                                    <span class="val font-bold">{studentDetails.parentEmail}</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="parent-divider"></div>
+                                            
+                                            <!-- Sınav Netleri Listesi -->
+                                            <h4 class="exams-sidebar-title">📝 Son Deneme Netleri</h4>
+                                            <template if:true={studentDetails.exams.length}>
+                                                <ul class="exams-quick-list">
+                                                    <template for:each={studentDetails.exams} for:item="ex">
+                                                        <li key={ex.Id} class="exam-quick-item glass-card">
+                                                            <div class="ex-lbl-row">
+                                                                <strong>{ex.Exam_Title__c}</strong>
+                                                                <span class="ex-date">{ex.Date__c}</span>
+                                                            </div>
+                                                            <div class="ex-nets-row">
+                                                                <span class="net-pill blue">Toplam: <strong>{ex.totalNetFormatted} Net</strong></span>
+                                                                <span class="net-pill orange">Mat: <strong>{ex.mathNetFormatted} Net</strong></span>
+                                                            </div>
+                                                        </li>
+                                                    </template>
+                                                </ul>
+                                            </template>
+                                            <template if:false={studentDetails.exams.length}>
+                                                <p class="empty-lbl">Kayıtlı deneme sınavı bulunmuyor.</p>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </template>
+        </main>
+
+        <!-- ================= MODALS INTERFACES ================= -->
+        
+        <!-- Modal 1: Homework Assign -->
+        <template if:true={isHomeworkModalOpen}>
+            <div class="modal-backdrop" onclick={closeModals}>
+                <div class="modal-card glass-card animate-zoom" onclick={stopPropagation}>
+                    <button class="modal-close" onclick={closeModals}>&times;</button>
+                    <h3>📚 Öğrenciye Yeni Ödev Ata</h3>
+                    <p class="modal-subtitle">{selectedStudent.First_Name__c} {selectedStudent.Last_Name__c}</p>
+
+                    <div class="modal-form">
+                        <div class="form-group">
+                            <label class="input-label">Ödev Konu Başlığı</label>
+                            <input type="text" class="glass-input" data-field="Title__c" value={newHomework.Title__c} oninput={handleHomeworkChange} required />
+                        </div>
+                        <div class="form-group">
+                            <label class="input-label">Açıklama ve Soru Detayları</label>
+                            <textarea class="glass-textarea" data-field="Description__c" value={newHomework.Description__c} oninput={handleHomeworkChange}></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="input-label">Son Teslim Tarihi</label>
+                            <input type="date" class="glass-input" data-field="Due_Date__c" value={newHomework.Due_Date__c} oninput={handleHomeworkChange} required />
+                        </div>
+                        <div class="modal-actions mt-4">
+                            <button class="btn-secondary" onclick={closeModals}>Vazgeç</button>
+                            <button class="btn-primary glow-effect flex-grow" onclick={saveHomework}>Ödevi Ata</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Modal 2: Payment Add -->
+        <template if:true={isPaymentModalOpen}>
+            <div class="modal-backdrop" onclick={closeModals}>
+                <div class="modal-card glass-card animate-zoom" onclick={stopPropagation}>
+                    <button class="modal-close" onclick={closeModals}>&times;</button>
+                    <h3>💳 Ödeme Tahsilat Kaydı Girişi</h3>
+                    <p class="modal-subtitle">{selectedStudent.First_Name__c} {selectedStudent.Last_Name__c}</p>
+
+                    <div class="modal-form">
+                        <div class="form-group">
+                            <label class="input-label">Tahsil Edilen Tutar (TL)</label>
+                            <input type="number" class="glass-input" data-field="Amount__c" value={newPayment.Amount__c} oninput={handlePaymentChange} required />
+                        </div>
+                        <div class="form-group">
+                            <label class="input-label">Ödeme Tarihi</label>
+                            <input type="date" class="glass-input" data-field="Payment_Date__c" value={newPayment.Payment_Date__c} oninput={handlePaymentChange} required />
+                        </div>
+                        <div class="form-group">
+                            <label class="input-label">Ödeme Yöntemi</label>
+                            <select class="glass-select" data-field="Payment_Method__c" value={newPayment.Payment_Method__c} onchange={handlePaymentChange}>
+                                <option value="Cash">Nakit Ödeme</option>
+                                <option value="Bank Transfer">Banka Transferi / Havale</option>
+                                <option value="Credit Card">Kredi Kartı</option>
+                            </select>
+                        </div>
+                        <div class="modal-actions mt-4">
+                            <button class="btn-secondary" onclick={closeModals}>Vazgeç</button>
+                            <button class="btn-primary glow-effect flex-grow" onclick={savePayment}>Ödemeyi Kaydet</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Modal 3: Homework Evaluation (Grading) -->
+        <template if:true={isGradeModalOpen}>
+            <div class="modal-backdrop" onclick={closeModals}>
+                <div class="modal-card glass-card animate-zoom" onclick={stopPropagation}>
+                    <button class="modal-close" onclick={closeModals}>&times;</button>
+                    <h3>✏️ Ödevi Değerlendir & Puanla</h3>
+                    <p class="modal-subtitle">{selectedHomeworkForGrading.Title__c}</p>
+
+                    <template if:true={modalErrorMsg}>
+                        <div class="error-alert mb-4">{modalErrorMsg}</div>
+                    </template>
+
+                    <form class="modal-form" onsubmit={saveGrade}>
+                        <div class="form-group">
+                            <label class="input-label">Ödev Değerlendirme Puanı (0-100)</label>
+                            <input type="number" class="glass-input" value={hwGrade} oninput={handleGradeChange} min="0" max="100" placeholder="Örn: 95" required />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="input-label">Ödev Durumu</label>
+                            <select class="glass-select" value={hwGradeStatus} onchange={handleGradeStatusChange}>
+                                <option value="Completed">Tamamlandı (Eksiksiz)</option>
+                                <option value="Incomplete">Eksik Yapıldı</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="input-label">Öğretmen Geri Bildirim Notu</label>
+                            <textarea class="glass-textarea" value={hwTeacherComment} oninput={handleGradeCommentChange} placeholder="Öğrencinin çözümü için geri bildirimlerinizi buraya yazın."></textarea>
+                        </div>
+
+                        <div class="modal-actions mt-4">
+                            <button type="button" class="btn-secondary" onclick={closeModals}>Vazgeç</button>
+                            <button type="submit" class="btn-primary glow-effect flex-grow">Değerlendirmeyi Kaydet</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </template>
+
+    </div>
+</template>

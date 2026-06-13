@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label><!-- Branch --></label>
+    <name>Branch__c</name>
+    <picklistValues>
+        <masterLabel>Fizik</masterLabel>
+        <translation><!-- Fizik --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Geometri</masterLabel>
+        <translation><!-- Geometri --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Kimya</masterLabel>
+        <translation><!-- Kimya --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Matematik</masterLabel>
+        <translation><!-- Matematik --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Türkçe</masterLabel>
+        <translation><!-- Türkçe --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>İngilizce</masterLabel>
+        <translation><!-- İngilizce --></translation>
+    </picklistValues>
+</CustomFieldTranslation>

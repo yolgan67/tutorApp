@@ -1,0 +1,167 @@
+<template>
+    <div class="calendar-container">
+        
+        <!-- ================= CALENDAR CONTROL HEADER ================= -->
+        <div class="calendar-header">
+            <div class="calendar-nav">
+                <button class="btn-nav-arrow" onclick={previousWeek} title="Önceki Hafta">←</button>
+                <h2 class="week-range-title">{weekDateRangeStr}</h2>
+                <button class="btn-nav-arrow" onclick={nextWeek} title="Sonraki Hafta">→</button>
+            </div>
+            
+            <div class="header-actions">
+                <button class="btn-action-outline btn-generate" onclick={handleGenerateFromSchedule}>
+                    ⚙️ Şablondan Haftalık Dersleri Üret
+                </button>
+                <button class="btn-action-outline btn-month" onclick={openMonthModal} title="Ay Seçici">
+                    📅 Ay Görünümü
+                </button>
+                <button class="btn-primary glow-effect btn-add-lesson" onclick={openAddModal}>
+                    ➕ Yeni Ders Ekle
+                </button>
+            </div>
+        </div>
+
+        <!-- Success/Error Alert Bar -->
+        <template if:true={genStatusMessage}>
+            <div class="gen-status-alert animate-fade">
+                <span class="alert-icon">⚡</span>
+                <span class="alert-text">{genStatusMessage}</span>
+            </div>
+        </template>
+
+        <template if:true={isLoading}>
+            <div class="loader-overlay">
+                <div class="custom-spinner"></div>
+                <p class="loader-text">Dersler yükleniyor...</p>
+            </div>
+        </template>
+
+        <!-- ================= WEEKLY GRID ================= -->
+        <div class="calendar-grid">
+            <template for:each={weekDays} for:item="day">
+                <div key={day.dateStr} class="day-column">
+                    <div class="day-header">
+                        <span class="day-name">{day.dayName}</span>
+                        <span class="day-date">{day.formattedDate}</span>
+                    </div>
+                    
+                    <div class="day-lessons">
+                        <template for:each={day.lessons} for:item="lesson">
+                            <div key={lesson.Id} class={lesson.cardClass} data-id={lesson.Id} onclick={openEditModal}>
+                                <div class="lesson-time-header">⏰ {lesson.timeStr} - {lesson.endTimeStr}</div>
+                                <div class="lesson-student-info">👤 {lesson.StudentName}</div>
+                                <div class="lesson-branch-info">📐 {lesson.Branch__c} Dersi</div>
+                            </div>
+                        </template>
+                        <template if:false={day.lessons.length}>
+                            <div class="empty-day-lbl">Planlı ders yok</div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+    </div>
+
+    <!-- ================= ADD / EDIT LESSON MODAL ================= -->
+    <template if:true={isModalOpen}>
+        <div class="modal-backdrop" onclick={closeModal}>
+            <div class="modal-card glass-card animate-zoom" onclick={stopPropagation}>
+                <div class="modal-header">
+                    <h3>{modalTitle}</h3>
+                    <button class="modal-close" onclick={closeModal}>&times;</button>
+                </div>
+                <div class="modal-body">
+                    
+                    <div class="form-group">
+                        <label class="input-label">Öğrenci</label>
+                        <select class="glass-select" onchange={handleStudentChange} disabled={isEditMode}>
+                            <option value="">-- Öğrenci Seçin --</option>
+                            <template for:each={studentOptions} for:item="opt">
+                                <option key={opt.value} value={opt.value} selected={opt.selected}>{opt.label}</option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="input-label">Branş / Konu (Örn: Matematik)</label>
+                        <input type="text" class="glass-input" value={currentLesson.Branch__c} oninput={handleBranchChange} placeholder="Örn: Limit ve Türev" />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="input-label">Ders Başlangıç Tarihi & Saati</label>
+                        <input type="datetime-local" class="glass-input" value={currentLesson.dateInput} onchange={handleDateChange} step="900" required />
+                        <span class="help-text">Dersler 15 dakikalık dilimler halinde planlanabilir.</span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="input-label">Süre (Dakika)</label>
+                            <input type="number" class="glass-input" value={currentLesson.Duration_Minutes__c} oninput={handleDurationChange} />
+                        </div>
+                        <div class="form-group">
+                            <label class="input-label">Saatlik Ders Ücreti (TL)</label>
+                            <input type="number" class="glass-input" value={currentLesson.Hourly_Rate__c} oninput={handleRateChange} />
+                        </div>
+                    </div>
+
+                    <!-- Cancel / Status Section (Only for Edit Mode) -->
+                    <template if:true={isEditMode}>
+                        <div class="status-divider"></div>
+                        <div class="form-group">
+                            <label class="input-label">Ders Durumu / İptal Seçenekleri</label>
+                            <select class="glass-select" onchange={handleStatusChange}>
+                                <option value="Scheduled" selected={isScheduled}>Planlandı (Scheduled)</option>
+                                <option value="Completed" selected={isCompleted}>Tamamlandı (Completed)</option>
+                                <option value="Canceled by Student" selected={isCanceledByStudent}>Öğrenci İptal Etti (Canceled by Student)</option>
+                                <option value="Canceled by Teacher" selected={isCanceledByTeacher}>Öğretmen İptal Etti (Canceled by Teacher)</option>
+                            </select>
+                        </div>
+                    </template>
+
+                </div>
+                <div class="modal-footer mt-4">
+                    <button class="btn-secondary" onclick={closeModal}>İptal</button>
+                    <button class="btn-primary glow-effect flex-grow" onclick={saveLesson}>Dersi Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- ================= MONTH VIEW SELECTION MODAL ================= -->
+    <template if:true={isMonthModalOpen}>
+        <div class="modal-backdrop" onclick={closeMonthModal}>
+            <div class="modal-card glass-card modal-month animate-zoom" onclick={stopPropagation}>
+                <div class="modal-header">
+                    <h3>{monthLabel}</h3>
+                    <button class="modal-close" onclick={closeMonthModal}>&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="month-nav">
+                        <button class="btn-sibling" onclick={prevMonth}>← Önceki Ay</button>
+                        <span class="month-title-lbl">{monthLabel}</span>
+                        <button class="btn-sibling" onclick={nextMonth}>Sonraki Ay →</button>
+                    </div>
+                    <div class="month-grid">
+                        <!-- Calendar Days -->
+                        <template for:each={monthDays} for:item="day">
+                            <div key={day.id} class={day.className} onclick={selectMonthDay} data-date={day.date}>
+                                <span class="day-num-text">{day.dayNumber}</span>
+                                
+                                <!-- Status Dots Indicator -->
+                                <template if:true={day.hasDots}>
+                                    <div class="day-dots">
+                                        <template for:each={day.dots} for:item="dot">
+                                            <span key={dot.key} class={dot.dotClass}></span>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+</template>

@@ -2,13 +2,15 @@
 <CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
     <brand>
         <headerColor>#0072FF</headerColor>
+        <shouldOverrideOrgTheme>false</shouldOverrideOrgTheme>
     </brand>
     <description>TutorSync Internal Management App</description>
-    <formFactors>Large</formFactors>
     <formFactors>Small</formFactors>
+    <formFactors>Large</formFactors>
     <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
     <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
     <isNavTabPersistenceDisabled>false</isNavTabPersistenceDisabled>
+    <isOmniPinnedViewEnabled>false</isOmniPinnedViewEnabled>
     <label>TutorSync</label>
     <navType>Standard</navType>
     <tabs>standard-home</tabs>

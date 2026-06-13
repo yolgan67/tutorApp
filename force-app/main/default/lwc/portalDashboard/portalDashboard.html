@@ -1,90 +1,457 @@
 <template>
     <div class="dashboard-wrapper">
-        <!-- Sidebar Navigation -->
-        <nav class="glass-sidebar">
-            <div class="logo">TutorSync</div>
-            <ul class="nav-links">
-                <li class="active"><a href="#">📊 Özet Paneli</a></li>
-                <li><a href="#">📅 Derslerim</a></li>
-                <li><a href="#">📚 Ödevlerim</a></li>
-                <li><a href="#">📝 Sınav Notlarım</a></li>
-            </ul>
-            <div class="bottom-action">
-                <button class="logout-btn" onclick={handleLogout}>🚪 Çıkış Yap</button>
+        <!-- ================= SIDEBAR ================= -->
+        <aside class="glass-sidebar">
+            <div class="brand-logo">
+                <span class="logo-emoji">📐</span>
+                <span class="brand-text">TutorSync</span>
             </div>
-        </nav>
+            
+            <ul class="nav-links">
+                <li class={sidebarSummaryClass}>
+                    <a href="#" data-tab="summary" onclick={handleTabClick}>
+                        <span class="nav-icon">📊</span> Özet Paneli
+                    </a>
+                </li>
+                <li class={sidebarLessonsClass}>
+                    <a href="#" data-tab="lessons" onclick={handleTabClick}>
+                        <span class="nav-icon">📅</span> Derslerim
+                    </a>
+                </li>
+                <li class={sidebarHomeworksClass}>
+                    <a href="#" data-tab="homeworks" onclick={handleTabClick}>
+                        <span class="nav-icon">📚</span> Ödevlerim
+                        <template if:true={pendingHomeworkCount}>
+                            <span class="badge badge-pending-count">{pendingHomeworkCount}</span>
+                        </template>
+                    </a>
+                </li>
+                <li class={sidebarExamsClass}>
+                    <a href="#" data-tab="exams" onclick={handleTabClick}>
+                        <span class="nav-icon">📝</span> Deneme Sınavlarım
+                    </a>
+                </li>
+                <li class={sidebarPasswordClass}>
+                    <a href="#" data-tab="password" onclick={handleTabClick}>
+                        <span class="nav-icon">🔐</span> Şifre Değiştir
+                    </a>
+                </li>
+            </ul>
 
-        <!-- Main Content Area -->
+            <div class="sidebar-footer">
+                <button class="btn-logout" onclick={handleLogout}>
+                    🚪 Çıkış Yap
+                </button>
+            </div>
+        </aside>
+
+        <!-- ================= MAIN CONTENT ================= -->
         <main class="main-content">
             <template if:true={isLoading}>
-                <div class="loader-container">
-                    <span class="loader"></span>
+                <div class="loader-overlay">
+                    <div class="custom-spinner"></div>
+                    <p class="loader-text">Veriler yükleniyor...</p>
                 </div>
             </template>
 
             <template if:false={isLoading}>
-                <header class="top-header">
-                    <h1>Hoşgeldin, <span class="highlight">{studentName}</span> 👋</h1>
-                    <p class="subtitle">İşte güncel eğitim özetin.</p>
+                <!-- Header Greeting -->
+                <header class="top-bar">
+                    <div class="greeting">
+                        <h1>Hoş Geldin, <span class="student-highlight">{studentName}</span> 👋</h1>
+                        <p class="tagline">Bugün yeni şeyler öğrenmek için harika bir gün!</p>
+                    </div>
                 </header>
 
-                <!-- Metric Cards -->
-                <div class="metrics-grid">
-                    <div class="glass-metric-card">
-                        <div class="icon-box balance-icon">💳</div>
-                        <div class="metric-info">
-                            <h3>Kalan Bakiye</h3>
-                            <h2>{balance} TL</h2>
-                        </div>
-                    </div>
-                    
-                    <div class="glass-metric-card">
-                        <div class="icon-box lesson-icon">🗓️</div>
-                        <div class="metric-info">
-                            <h3>Yaklaşan Ders</h3>
-                            <h2>{nextLessonDate}</h2>
-                            <p>{nextLessonBranch}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="glass-metric-card">
-                        <div class="icon-box hw-icon">📝</div>
-                        <div class="metric-info">
-                            <h3>Bekleyen Ödev</h3>
-                            <h2>{pendingHomeworkCount}</h2>
-                        </div>
-                    </div>
-                </div>
+                <!-- ================= TAB: SUMMARY ================= -->
+                <template if:true={isSummaryActive}>
+                    <div class="tab-content animate-fade">
+                        <!-- Profile Card Grid -->
+                        <div class="profile-summary-grid">
+                            <div class="profile-card glass-card">
+                                <div class="profile-header">
+                                    <div class="avatar">👨‍🎓</div>
+                                    <div class="profile-details">
+                                        <h3>Öğrenci Profili</h3>
+                                        <p>Aktif Ders Takip Kartı</p>
+                                    </div>
+                                </div>
+                                <div class="profile-meta-list">
+                                    <div class="meta-item">
+                                        <span class="meta-label">Sınıf Derecesi:</span>
+                                        <span class="meta-val">{studentGrade}</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span class="meta-label">Okul Bilgisi:</span>
+                                        <span class="meta-val">{studentSchool}</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span class="meta-label">Kayıt Tarihi:</span>
+                                        <span class="meta-val">{studentRegDate}</span>
+                                    </div>
+                                </div>
+                            </div>
 
-                <!-- Recent Activity / Lessons -->
-                <div class="activity-section">
-                    <div class="glass-panel">
-                        <h2>Yaklaşan Program</h2>
-                        <template if:true={hasLessons}>
-                            <ul class="lesson-list">
-                                <template for:each={lessons} for:item="lesson">
-                                    <li key={lesson.Id} class="lesson-item">
-                                        <div class="lesson-date">
-                                            <span class="day">{lesson.dayStr}</span>
-                                            <span class="month">{lesson.monthStr}</span>
-                                        </div>
-                                        <div class="lesson-details">
-                                            <h4>{lesson.Branch__c} Dersi</h4>
-                                            <p>⏳ {lesson.Duration_Minutes__c} Dakika</p>
-                                        </div>
-                                        <div class="lesson-status">
-                                            <span class="badge badge-scheduled">Planlandı</span>
-                                        </div>
-                                    </li>
+                            <!-- Highlights -->
+                            <div class="metric-highlights">
+                                <div class="metric-item glass-card card-teal">
+                                    <div class="metric-icon">🗓️</div>
+                                    <div class="metric-body">
+                                        <h4>Yaklaşan İlk Ders</h4>
+                                        <h3>{nextLessonDate}</h3>
+                                        <p class="badge badge-mint-mini">{nextLessonBranch}</p>
+                                    </div>
+                                </div>
+
+                                <div class="metric-item glass-card card-mint">
+                                    <div class="metric-icon">📝</div>
+                                    <div class="metric-body">
+                                        <h4>Yapılacak Ödevler</h4>
+                                        <h3>{pendingHomeworkCount} Adet</h3>
+                                        <p>Hemen tamamlayıp çözüm yollayın.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Summary Lists -->
+                        <div class="summary-lists-row">
+                            <!-- Quick Lessons -->
+                            <div class="summary-list-panel glass-card">
+                                <div class="panel-header">
+                                    <h2>Haftalık Programın</h2>
+                                    <a href="#" data-tab="lessons" onclick={handleTabClick} class="panel-link">Hepsini Gör →</a>
+                                </div>
+                                <template if:true={hasLessons}>
+                                    <ul class="lesson-quick-list">
+                                        <template for:each={lessons} for:item="lesson">
+                                            <li key={lesson.Id} class="lesson-quick-item">
+                                                <div class="lesson-icon-label">📐</div>
+                                                <div class="lesson-info">
+                                                    <h4>{lesson.Branch__c} Dersi</h4>
+                                                    <p>{lesson.dateStr} | Saat {lesson.timeStr}</p>
+                                                </div>
+                                                <div class="lesson-badge">
+                                                    <span class="badge badge-mint-mini">Planlandı</span>
+                                                </div>
+                                            </li>
+                                        </template>
+                                    </ul>
                                 </template>
-                            </ul>
-                        </template>
-                        <template if:false={hasLessons}>
-                            <div class="empty-state">Yaklaşan ders planlaması bulunmuyor.</div>
-                        </template>
+                                <template if:false={hasLessons}>
+                                    <div class="empty-state-card">
+                                        <p>Yakın tarihte planlanmış bir dersin görünmüyor.</p>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </template>
+
+                <!-- ================= TAB: LESSONS ================= -->
+                <template if:true={isLessonsActive}>
+                    <div class="tab-content animate-fade">
+                        <div class="section-card glass-card">
+                            <h2 class="section-title">Haftalık Ders Takvimi & Geçmiş Dersler</h2>
+                            <template if:true={allLessons.length}>
+                                <div class="table-responsive">
+                                    <table class="premium-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Ders Adı</th>
+                                                <th>Branş</th>
+                                                <th>Tarih ve Saat</th>
+                                                <th>Süre</th>
+                                                <th>Durum</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <template for:each={allLessons} for:item="lesson">
+                                                <tr key={lesson.Id}>
+                                                    <td class="font-bold">{lesson.Name}</td>
+                                                    <td>{lesson.Branch__c}</td>
+                                                    <td>{lesson.Date_Time__c}</td>
+                                                    <td>⏱️ {lesson.Duration_Minutes__c} Dk</td>
+                                                    <td>
+                                                        <span class="badge badge-mint-mini">{lesson.Status__c}</span>
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </template>
+                            <template if:false={allLessons.length}>
+                                <div class="empty-state">
+                                    <p>Henüz ders kaydınız bulunmuyor.</p>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- ================= TAB: HOMEWORKS ================= -->
+                <template if:true={isHomeworksActive}>
+                    <div class="tab-content animate-fade">
+                        <div class="section-card glass-card">
+                            <h2 class="section-title">Ödev Takip Paneli</h2>
+                            <template if:true={homeworks.length}>
+                                <div class="homeworks-grid">
+                                    <template for:each={homeworks} for:item="hw">
+                                        <div key={hw.Id} class="homework-card glass-card">
+                                            <div class="hw-header">
+                                                <h3>{hw.Title__c}</h3>
+                                                <span class={hw.badgeClass}>{hw.statusText}</span>
+                                            </div>
+                                            <p class="hw-desc">{hw.Description__c}</p>
+                                            
+                                            <div class="hw-meta">
+                                                <span>📅 Son Teslim: {hw.dueDateStr}</span>
+                                                <span>📐 Branş: {hw.Lesson__r.Name}</span>
+                                            </div>
+
+                                            <!-- Homework Results & Stats if Submitted/Graded -->
+                                            <template if:true={hw.Completed_Questions__c}>
+                                                <div class="hw-stats-box">
+                                                    <h5>Çözüm Dökümü:</h5>
+                                                    <div class="stats-row">
+                                                        <span>📊 Toplam Soru: <strong>{hw.Completed_Questions__c}</strong></span>
+                                                        <span class="text-green">✔️ Doğru: <strong>{hw.Correct_Answers__c}</strong></span>
+                                                        <span class="text-red">❌ Yanlış: <strong>{hw.Wrong_Answers__c}</strong></span>
+                                                    </div>
+                                                    <template if:true={hw.Student_Comment__c}>
+                                                        <p class="comment-text italic"><strong>Notum:</strong> "{hw.Student_Comment__c}"</p>
+                                                    </template>
+                                                </div>
+                                            </template>
+
+                                            <!-- Homework Grading by Teacher -->
+                                            <template if:true={hw.isGraded}>
+                                                <div class="teacher-feedback-box">
+                                                    <h5>Öğretmen Değerlendirmesi:</h5>
+                                                    <p class="grade-label">💯 Puan: <strong>{hw.Grade__c} / 100</strong></p>
+                                                    <template if:true={hw.Teacher_Comment__c}>
+                                                        <p class="comment-text"><strong>Geribildirim:</strong> "{hw.Teacher_Comment__c}"</p>
+                                                    </template>
+                                                </div>
+                                            </template>
+
+                                            <div class="hw-actions">
+                                                <template if:true={hw.isPending}>
+                                                    <button class="btn-primary glow-effect flex-grow" data-id={hw.Id} onclick={openSubmitHomework}>
+                                                        ✍️ Çözüm Gönder
+                                                    </button>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                            <template if:false={homeworks.length}>
+                                <div class="empty-state">
+                                    <p>Henüz ödev tanımlanmamış.</p>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- ================= TAB: EXAMS ================= -->
+                <template if:true={isExamsActive}>
+                    <div class="tab-content animate-fade">
+                        <div class="section-card glass-card">
+                            <div class="panel-header-action">
+                                <h2 class="section-title">Deneme Sınavlarım ve Netlerim</h2>
+                                <button class="btn-primary glow-effect" onclick={openAddExam}>
+                                    ➕ Yeni Deneme Sonucu Ekle
+                                </button>
+                            </div>
+
+                            <template if:true={exams.length}>
+                                <div class="table-responsive">
+                                    <table class="premium-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Sınav Adı</th>
+                                                <th>Tarih</th>
+                                                <th>Toplam Soru</th>
+                                                <th>Doğru</th>
+                                                <th>Yanlış</th>
+                                                <th>Mat. Doğru/Yanlış</th>
+                                                <th>Toplam Net</th>
+                                                <th>Matematik Net</th>
+                                                <th>Başarı (%)</th>
+                                                <th>Öğretmen Yorumu</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <template for:each={exams} for:item="ex">
+                                                <tr key={ex.Id}>
+                                                    <td class="font-bold">{ex.Exam_Title__c}</td>
+                                                    <td>{ex.examDateStr}</td>
+                                                    <td>{ex.Total_Questions__c}</td>
+                                                    <td class="text-green font-bold">{ex.Total_Correct__c}</td>
+                                                    <td class="text-red font-bold">{ex.Total_Wrong__c}</td>
+                                                    <td>{ex.Math_Correct__c}D / {ex.Math_Wrong__c}Y</td>
+                                                    <td class="total-net-cell">{ex.totalNetFormatted}</td>
+                                                    <td class="math-net-cell">{ex.mathNetFormatted}</td>
+                                                    <td>
+                                                        <span class="badge badge-mint-mini">{ex.Score__c}%</span>
+                                                    </td>
+                                                    <td class="comment-cell">{ex.Teacher_Feedback__c}</td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </template>
+                            <template if:false={exams.length}>
+                                <div class="empty-state">
+                                    <p>Kayıtlı deneme sınavı bulunmuyor. Sağ üstteki butondan ilk denemenizi kaydedin!</p>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- ================= TAB: PASSWORD ================= -->
+                <template if:true={isPasswordActive}>
+                    <div class="tab-content animate-fade">
+                        <div class="section-card glass-card max-w-sm">
+                            <h2 class="section-title">Portal Şifre Güncelleme</h2>
+                            
+                            <template if:true={pwdErrorMsg}>
+                                <div class="error-alert animate-fade mb-4">
+                                    ⚠️ {pwdErrorMsg}
+                                </div>
+                            </template>
+
+                            <template if:true={pwdSuccessMsg}>
+                                <div class="success-alert animate-fade mb-4">
+                                    ✔️ {pwdSuccessMsg}
+                                </div>
+                            </template>
+
+                            <form class="password-form" onsubmit={handlePasswordSubmit}>
+                                <div class="input-group">
+                                    <label class="input-label">Mevcut Şifre</label>
+                                    <input type="password" class="glass-input-custom" value={currentPassword} oninput={handleCurPwd} required />
+                                </div>
+                                <div class="input-group">
+                                    <label class="input-label">Yeni Şifre (En az 6 karakter)</label>
+                                    <input type="password" class="glass-input-custom" value={newPassword} oninput={handleNewPwd} required />
+                                </div>
+                                <div class="input-group">
+                                    <label class="input-label">Yeni Şifre (Tekrar)</label>
+                                    <input type="password" class="glass-input-custom" value={confirmPassword} oninput={handleConfPwd} required />
+                                </div>
+                                <button type="submit" class="glass-button glow-effect mt-4 w-full">
+                                    Şifremi Güncelle
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </template>
             </template>
         </main>
+
+        <!-- ================= MODAL: SUBMIT HOMEWORK ================= -->
+        <template if:true={showHomeworkModal}>
+            <div class="modal-overlay" onclick={closeHomeworkModal}>
+                <div class="modal-content glass-card animate-zoom" onclick={stopPropagation}>
+                    <button class="modal-close" onclick={closeHomeworkModal}>&times;</button>
+                    <h3 class="modal-title">📝 Ödev Çözüm Detayları</h3>
+                    <p class="modal-subtitle">{activeHomework.Title__c}</p>
+                    
+                    <template if:true={modalErrorMsg}>
+                        <div class="error-alert mb-4">{modalErrorMsg}</div>
+                    </template>
+
+                    <form class="modal-form" onsubmit={handleHomeworkSubmit}>
+                        <div class="input-group">
+                            <label class="input-label">Ödevdeki Toplam Soru Sayısı</label>
+                            <input type="number" class="glass-input-custom" value={hwCompletedQuestions} oninput={handleHwCompletedChange} required />
+                        </div>
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label class="input-label">Doğru Sayısı</label>
+                                <input type="number" class="glass-input-custom" value={hwCorrects} oninput={handleHwCorrectsChange} required />
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Yanlış Sayısı</label>
+                                <input type="number" class="glass-input-custom" value={hwWrongs} oninput={handleHwWrongsChange} required />
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Yapamadığınız Sorular / Öğretmene Not</label>
+                            <textarea class="glass-textarea" value={hwComment} oninput={handleHwCommentChange} placeholder="Yapamadığınız soruları veya notlarınızı buraya yazabilirsiniz."></textarea>
+                        </div>
+                        
+                        <div class="modal-actions mt-4">
+                            <button type="button" class="btn-secondary-custom" onclick={closeHomeworkModal}>Vazgeç</button>
+                            <button type="submit" class="glass-button glow-effect flex-grow">Çözümü Teslim Et</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </template>
+
+        <!-- ================= MODAL: ADD PRACTICE EXAM ================= -->
+        <template if:true={showExamModal}>
+            <div class="modal-overlay" onclick={closeExamModal}>
+                <div class="modal-content glass-card animate-zoom" onclick={stopPropagation}>
+                    <button class="modal-close" onclick={closeExamModal}>&times;</button>
+                    <h3 class="modal-title">🏆 Deneme Sınavı Ekle</h3>
+                    <p class="modal-subtitle">Doğru, Yanlış ve Matematik Net Hesabı</p>
+                    
+                    <template if:true={modalErrorMsg}>
+                        <div class="error-alert mb-4">{modalErrorMsg}</div>
+                    </template>
+
+                    <form class="modal-form" onsubmit={handleExamSubmit}>
+                        <div class="input-group">
+                            <label class="input-label">Deneme Sınavı Başlığı</label>
+                            <input type="text" class="glass-input-custom" placeholder="Örn: TÖDER Genel Deneme 1" value={examTitle} oninput={handleExamTitle} required />
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Sınav Tarihi</label>
+                            <input type="date" class="glass-input-custom" value={examDate} oninput={handleExamDate} required />
+                        </div>
+                        
+                        <div class="input-group">
+                            <label class="input-label">Toplam Soru Sayısı</label>
+                            <input type="number" class="glass-input-custom" value={examTotalQuestions} oninput={handleExamTotalQ} required />
+                        </div>
+
+                        <div class="form-row-three">
+                            <div class="input-group">
+                                <label class="input-label">Toplam Doğru</label>
+                                <input type="number" class="glass-input-custom" value={examTotalCorrect} oninput={handleExamTotalC} required />
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Toplam Yanlış</label>
+                                <input type="number" class="glass-input-custom" value={examTotalWrong} oninput={handleExamTotalW} required />
+                            </div>
+                        </div>
+
+                        <div class="form-row-three">
+                            <div class="input-group">
+                                <label class="input-label">Matematik Doğru</label>
+                                <input type="number" class="glass-input-custom" value={examMathCorrect} oninput={handleExamMathC} required />
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Matematik Yanlış</label>
+                                <input type="number" class="glass-input-custom" value={examMathWrong} oninput={handleExamMathW} required />
+                            </div>
+                        </div>
+
+                        <div class="modal-actions mt-4">
+                            <button type="button" class="btn-secondary-custom" onclick={closeExamModal}>Kapat</button>
+                            <button type="submit" class="glass-button glow-effect flex-grow">Denemeyi Kaydet</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </template>
     </div>
 </template>

@@ -1,0 +1,527 @@
+/* TutorSync Premium Calendar Stylesheet - Teal & Mint Theme */
+:host {
+    --primary-color: #00b4d8;
+    --secondary-color: #57cc99;
+    --accent-color: #80ed99;
+    --bg-light: #f4f9f7;
+    --border-color: rgba(226, 232, 240, 0.8);
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+.calendar-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ================= HEADER CONTROL BAR ================= */
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+}
+
+.calendar-nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.btn-nav-arrow {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #4a5568;
+    width: 42px;
+    height: 42px;
+    font-size: 18px;
+    font-weight: 700;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+
+.btn-nav-arrow:hover {
+    background: #edf2f7;
+    border-color: #cbd5e0;
+    transform: scale(1.05);
+}
+
+.week-range-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #1a202c;
+    margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn-action-outline {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    color: #4a5568;
+    padding: 11px 20px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-action-outline:hover {
+    background: #edf2f7;
+    border-color: #cbd5e0;
+}
+
+.btn-generate {
+    background: #f0fdfa;
+    border-color: #ccfbf1;
+    color: #0d9488;
+}
+
+.btn-generate:hover {
+    background: #ccfbf1;
+    color: #0f766e;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #00b4d8, #57cc99);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 12px 24px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 180, 216, 0.2);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    box-shadow: 0 6px 20px rgba(0, 180, 216, 0.35);
+    transform: translateY(-1px);
+}
+
+/* Generation Status Alert Banner */
+.gen-status-alert {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #15803d;
+    padding: 14px 20px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: var(--shadow);
+}
+
+/* ================= WEEKLY GRID ================= */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 16px;
+    width: 100%;
+}
+
+.day-column {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 500px;
+    box-shadow: var(--shadow);
+}
+
+.day-header {
+    background: #f8fafc;
+    padding: 16px;
+    text-align: center;
+    border-bottom: 1px solid #edf2f7;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.day-name {
+    font-size: 12px;
+    font-weight: 800;
+    color: #a0aec0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.day-date {
+    font-size: 15px;
+    font-weight: 800;
+    color: #2d3748;
+}
+
+.day-lessons {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-grow: 1;
+}
+
+.empty-day-lbl {
+    text-align: center;
+    color: #cbd5e1;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 24px 0;
+    border: 2px dashed #edf2f7;
+    border-radius: 10px;
+}
+
+/* Weekly Lesson Cards (Teal & Mint themed) */
+.lesson-card {
+    padding: 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.lesson-card:hover {
+    transform: translateY(-2px) scale(1.02);
+}
+
+.lesson-time-header {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.lesson-student-info {
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.lesson-branch-info {
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* Lesson card state statuses matching mint & teals */
+.status-Scheduled {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1e40af;
+}
+
+.status-Completed {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+}
+
+.status-Canceled {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+}
+
+/* ================= MONTH VIEW SELECTION MODAL ================= */
+.modal-month {
+    max-width: 600px;
+    width: 100%;
+}
+
+.month-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.month-title-lbl {
+    font-size: 18px;
+    font-weight: 800;
+    color: #1a202c;
+}
+
+.btn-sibling {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #4a5568;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-sibling:hover {
+    background: #edf2f7;
+}
+
+.month-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 12px;
+}
+
+.month-day {
+    aspect-ratio: 1.1;
+    border-radius: 12px;
+    border: 1px solid #edf2f7;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #ffffff;
+    position: relative;
+    font-size: 14px;
+    color: #2d3748;
+    padding-bottom: 4px;
+}
+
+.month-day:hover {
+    border-color: var(--primary-color);
+    background: rgba(0, 180, 216, 0.04);
+}
+
+.month-day.empty {
+    background: transparent;
+    border-color: transparent;
+    cursor: default;
+}
+
+.month-day.empty:hover {
+    background: transparent;
+    border-color: transparent;
+}
+
+.month-day.today {
+    background: #f0fdfa;
+    border-color: #57cc99;
+    color: #0f766e;
+    box-shadow: 0 0 0 2px rgba(87, 204, 153, 0.2);
+}
+
+/* Dots inside month cells for status mapping */
+.day-dots {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 4px;
+    position: absolute;
+    bottom: 8px;
+    width: 100%;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.dot-scheduled { background: #3b82f6; }
+.dot-completed { background: #10b981; }
+.dot-canceled { background: #ef4444; }
+
+/* ================= MODALS & GENERALS ================= */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-card {
+    width: 100%;
+    max-width: 480px;
+    padding: 32px;
+    border-radius: 20px;
+    position: relative;
+    background: #ffffff;
+}
+
+.modal-close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #a0aec0;
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    color: #e53e3e;
+}
+
+.modal-header h3 {
+    font-size: 18px;
+    font-weight: 800;
+    color: #1a202c;
+    margin: 0;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.input-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #4a5568;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.glass-input {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    font-size: 14px;
+}
+
+.glass-select {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    font-size: 14px;
+    background: #ffffff;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.help-text {
+    font-size: 11px;
+    color: #a0aec0;
+    margin-top: 2px;
+}
+
+.status-divider {
+    height: 1px;
+    background: #edf2f7;
+    margin: 16px 0;
+    width: 100%;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-secondary {
+    background: #edf2f7;
+    color: #4a5568;
+    border: none;
+    border-radius: 20px;
+    padding: 12px 20px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
+
+/* Utilities */
+.animate-zoom {
+    animation: zoom 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes zoom {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.animate-fade {
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.loader-overlay {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+}
+
+.custom-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(87, 204, 153, 0.1);
+    border-top-color: #57cc99;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loader-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: #57cc99;
+    margin-top: 12px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (max-width: 992px) {
+    .calendar-grid {
+        grid-template-columns: 1fr;
+    }
+    .day-column {
+        min-height: auto;
+    }
+}

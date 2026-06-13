@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- Kod ve Arayüz Bileşenleri -->
     <types>
         <members>*</members>
         <name>ApexClass</name>
     </types>
     <types>
         <members>*</members>
-        <name>ApexComponent</name>
+        <name>ApexTrigger</name>
     </types>
     <types>
         <members>*</members>
@@ -14,11 +15,7 @@
     </types>
     <types>
         <members>*</members>
-        <name>ApexTestSuite</name>
-    </types>
-    <types>
-        <members>*</members>
-        <name>ApexTrigger</name>
+        <name>ApexComponent</name>
     </types>
     <types>
         <members>*</members>
@@ -28,9 +25,114 @@
         <members>*</members>
         <name>LightningComponentBundle</name>
     </types>
+
+    <!-- Objeler ve Yapılandırmalar -->
+    <types>
+        <members>*</members>
+        <members>Account</members>
+        <members>Contact</members>
+        <members>Opportunity</members>
+        <members>User</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>ValidationRule</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>BusinessProcess</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>RecordType</name>
+    </types>
+
+    <!-- Otomasyonlar (Flow, Workflow, vb.) -->
+    <types>
+        <members>*</members>
+        <name>Flow</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>FlowDefinition</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>Workflow</name>
+    </types>
+
+    <!-- Yetkilendirme ve Görünüm -->
+    <types>
+        <members>*</members>
+        <name>Layout</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>FlexiPage</name> <!-- Lightning Page'ler -->
+    </types>
+    <types>
+        <members>*</members>
+        <name>PermissionSet</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>Profile</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>CustomTab</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>CustomApplication</name>
+    </types>
+
+    <!-- Custom Metadata & Settings -->
+    <types>
+        <members>*</members>
+        <name>CustomMetadata</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>CustomObjectTranslation</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>CustomLabels</name>
+    </types>
+
+    <!-- Platform Events & Notifications -->
+    <types>
+        <members>*</members>
+        <name>PlatformEventChannel</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>CustomNotificationType</name>
+    </types>
+
+    <!-- Diğer Önemli Metadata -->
     <types>
         <members>*</members>
         <name>StaticResource</name>
     </types>
-    <version>66.0</version>
+    <types>
+        <members>*</members>
+        <name>Group</name> <!-- Public Groups -->
+    </types>
+    <types>
+        <members>*</members>
+        <name>Queue</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>EmailTemplate</name>
+    </types>
+
+    <version>61.0</version>
 </Package>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Total_Net__c</fullName>
+    <externalId>false</externalId>
+    <formula>Total_Correct__c - (Total_Wrong__c / IF(OR(ISPICKVAL(Student__r.Grade__c, '9. Sınıf'), ISPICKVAL(Student__r.Grade__c, '10. Sınıf'), ISPICKVAL(Student__r.Grade__c, '11. Sınıf'), ISPICKVAL(Student__r.Grade__c, '12. Sınıf'), ISPICKVAL(Student__r.Grade__c, 'Mezun')), 3, 4))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Total Net</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+</CustomField>
