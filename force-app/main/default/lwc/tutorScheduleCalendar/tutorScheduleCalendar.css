@@ -432,6 +432,39 @@
     background: #ffffff;
 }
 
+.glass-textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    box-sizing: border-box;
+    line-height: 1.5;
+}
+.glass-textarea:focus {
+    outline: none;
+    border-color: #7C5CBF;
+    box-shadow: 0 0 0 3px rgba(124, 92, 191, 0.12);
+}
+.status-divider {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin: 16px 0;
+}
+
+.save-error-alert {
+    background: rgba(231, 76, 60, 0.1);
+    border: 1px solid rgba(231, 76, 60, 0.35);
+    color: #C0392B;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 14px;
+}
+
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Student_Type__c</fullName>
+    <externalId>false</externalId>
+    <label>Öğrenci Tipi</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>TYT/AYT Hazırlık</fullName>
+                <default>false</default>
+                <label>TYT/AYT Hazırlık</label>
+            </value>
+            <value>
+                <fullName>LGS Hazırlık</fullName>
+                <default>false</default>
+                <label>LGS Hazırlık</label>
+            </value>
+            <value>
+                <fullName>Ara Sınıf</fullName>
+                <default>false</default>
+                <label>Ara Sınıf</label>
+            </value>
+            <value>
+                <fullName>Koçluk</fullName>
+                <default>false</default>
+                <label>Koçluk</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

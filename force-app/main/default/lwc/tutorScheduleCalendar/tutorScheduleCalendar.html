@@ -73,7 +73,11 @@
                     <button class="modal-close" onclick={closeModal}>&times;</button>
                 </div>
                 <div class="modal-body">
-                    
+
+                    <template if:true={saveLessonError}>
+                        <div class="save-error-alert">{saveLessonError}</div>
+                    </template>
+
                     <div class="form-group">
                         <label class="input-label">Öğrenci</label>
                         <select class="glass-select" onchange={handleStudentChange} disabled={isEditMode}>
@@ -85,8 +89,19 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="input-label">Branş / Konu (Örn: Matematik)</label>
-                        <input type="text" class="glass-input" value={currentLesson.Branch__c} oninput={handleBranchChange} placeholder="Örn: Limit ve Türev" />
+                        <label class="input-label">Branş</label>
+                        <select class="glass-select" onchange={handleBranchChange}>
+                            <option value="">-- Branş Seçin --</option>
+                            <option value="Matematik" selected={isBranchMatematik}>Matematik</option>
+                            <option value="Geometri" selected={isBranchGeometri}>Geometri</option>
+                            <option value="Fizik" selected={isBranchFizik}>Fizik</option>
+                            <option value="Kimya" selected={isBranchKimya}>Kimya</option>
+                            <option value="Biyoloji" selected={isBranchBiyoloji}>Biyoloji</option>
+                            <option value="Türkçe" selected={isBranchTurkce}>Türkçe</option>
+                            <option value="Tarih" selected={isBranchTarih}>Tarih</option>
+                            <option value="İngilizce" selected={isBranchIngilizce}>İngilizce</option>
+                            <option value="Koçluk" selected={isBranchKocluk}>Koçluk</option>
+                        </select>
                     </div>
 
                     <div class="form-group">
@@ -117,6 +132,10 @@
                                 <option value="Canceled by Student" selected={isCanceledByStudent}>Öğrenci İptal Etti (Canceled by Student)</option>
                                 <option value="Canceled by Teacher" selected={isCanceledByTeacher}>Öğretmen İptal Etti (Canceled by Teacher)</option>
                             </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="input-label">📝 Ders Notu (öğrenci ve veli görebilir)</label>
+                            <textarea class="glass-textarea" value={currentLesson.Lesson_Notes__c} oninput={handleNotesChange} rows="4" placeholder="Bu derste hangi konular işlendi? Öğrencinin güçlü/zayıf yönleri? Bir sonraki ders için öneriler..."></textarea>
                         </div>
                     </template>
 

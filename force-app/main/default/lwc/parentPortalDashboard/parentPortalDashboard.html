@@ -1,15 +1,14 @@
 <template>
     <div class="dashboard-wrapper">
-        <!-- ================= SIDEBAR ================= -->
+        <!-- SIDEBAR -->
         <aside class="glass-sidebar">
             <div class="brand-logo">
-                <span class="logo-emoji">📐</span>
-                <span class="brand-text">TutorSync</span>
+                <span class="logo-emoji">✏️</span>
+                <span class="brand-text">Çözüm Köşesi</span>
             </div>
-            
-            <!-- Parent Profile Badge -->
+
             <div class="parent-profile-badge">
-                <div class="parent-avatar">👨‍👩-👦</div>
+                <div class="parent-avatar">👨‍👩‍👦</div>
                 <h4>{parentName}</h4>
                 <p class="parent-sub">Veli Hesabı</p>
                 <div class="parent-contact">
@@ -18,8 +17,12 @@
                 </div>
             </div>
 
-            <!-- Tab Menu -->
             <ul class="nav-links">
+                <li class={sidebarFinanceClass}>
+                    <a href="#" data-tab="finance" onclick={handleTabClick}>
+                        <span class="nav-icon">💳</span> Borç &amp; Ödeme
+                    </a>
+                </li>
                 <li class={sidebarLessonsClass}>
                     <a href="#" data-tab="lessons" onclick={handleTabClick}>
                         <span class="nav-icon">📅</span> Ders Programı
@@ -35,11 +38,6 @@
                         <span class="nav-icon">📈</span> Deneme Analizi
                     </a>
                 </li>
-                <li class={sidebarPaymentsClass}>
-                    <a href="#" data-tab="payments" onclick={handleTabClick}>
-                        <span class="nav-icon">💳</span> Ödemeler & Finans
-                    </a>
-                </li>
                 <li class={sidebarPasswordClass}>
                     <a href="#" data-tab="password" onclick={handleTabClick}>
                         <span class="nav-icon">🔐</span> Şifre Değiştir
@@ -48,73 +46,170 @@
             </ul>
 
             <div class="sidebar-footer">
-                <button class="btn-logout" onclick={handleLogout}>
-                    🚪 Çıkış Yap
-                </button>
+                <button class="btn-logout" onclick={handleLogout}>🚪 Çıkış Yap</button>
             </div>
         </aside>
 
-        <!-- ================= MAIN CONTENT AREA ================= -->
+        <!-- MAIN -->
         <main class="main-content">
             <template if:true={isLoading}>
                 <div class="loader-overlay">
                     <div class="custom-spinner"></div>
-                    <p class="loader-text">Öğrenci verileri senkronize ediliyor...</p>
+                    <p class="loader-text">Yükleniyor...</p>
                 </div>
             </template>
 
             <template if:false={isLoading}>
-                <!-- SIBLING (CHILD) SELECTOR HEADER -->
+                <!-- Child Selector -->
                 <header class="sibling-header glass-card">
                     <div class="sibling-selector">
-                        <label class="selector-label">ÖĞRENCİ SEÇİMİ (KARDEŞ DEĞİŞTİRME):</label>
+                        <label class="selector-label">ÖĞRENCİ SEÇİMİ:</label>
                         <template if:true={hasChildren}>
                             <div class="siblings-row">
                                 <template for:each={childrenList} for:item="child">
-                                    <button 
-                                        key={child.Id} 
-                                        class={child.btnClass} 
-                                        data-id={child.Id} 
-                                        onclick={handleSiblingChange}
-                                    >
+                                    <button key={child.Id} class={child.btnClass} data-id={child.Id} onclick={handleSiblingChange}>
                                         🎓 {child.Name}
                                     </button>
                                 </template>
                             </div>
                         </template>
                         <template if:false={hasChildren}>
-                            <p class="no-children-alert">Kayıtlı öğrenciniz bulunmuyor.</p>
+                            <p class="empty-state">Kayıtlı öğrenciniz bulunmuyor.</p>
                         </template>
                     </div>
-
-                    <!-- Selected Child Meta -->
                     <template if:true={selectedStudent}>
                         <div class="student-meta-summary">
                             <div class="meta-pill">🏫 {selectedStudent.School__c}</div>
-                            <div class="meta-pill text-teal">🎓 {selectedStudent.Grade__c}</div>
+                            <div class="meta-pill accent">{selectedStudent.Grade__c}</div>
+                            <template if:true={selectedStudent.Student_Type__c}>
+                                <div class="meta-pill purple">{selectedStudent.Student_Type__c}</div>
+                            </template>
                         </div>
                     </template>
                 </header>
 
-                <!-- ================= CHILD DETAILS DISPLAY ================= -->
                 <template if:true={selectedStudent}>
-                    
-                    <!-- ================= TAB: LESSONS ================= -->
+
+                    <!-- ===== TAB: FINANCE ===== -->
+                    <template if:true={isFinanceActive}>
+                        <div class="tab-content animate-fade">
+
+                            <!-- Summary Metrics -->
+                            <div class="financial-metrics-grid">
+                                <div class="finance-card glass-card fc-blue">
+                                    <div class="fin-icon">📊</div>
+                                    <div class="fin-body">
+                                        <h4>Toplam Ders Ücreti</h4>
+                                        <h2>{totalLessonFeeFormatted} ₺</h2>
+                                    </div>
+                                </div>
+                                <div class="finance-card glass-card fc-green">
+                                    <div class="fin-icon">✅</div>
+                                    <div class="fin-body">
+                                        <h4>Toplam Ödenen</h4>
+                                        <h2>{totalPaidFormatted} ₺</h2>
+                                    </div>
+                                </div>
+                                <div class="finance-card glass-card fc-red">
+                                    <div class="fin-icon">⚠️</div>
+                                    <div class="fin-body">
+                                        <h4>Kalan Borç</h4>
+                                        <h2>{balanceFormatted} ₺</h2>
+                                        <template if:true={hasOverdue}>
+                                            <p class="fin-sub overdue-sub">{overdueCount} ders tutarı gecikmiş</p>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Overdue Lessons -->
+                            <template if:true={hasOverdue}>
+                                <div class="section-card glass-card overdue-card">
+                                    <div class="overdue-header">
+                                        <h2 class="section-title">⏰ Gecikmiş Ders Ödemeleri</h2>
+                                        <span class="overdue-badge">{overdueCount} Gecikmiş</span>
+                                    </div>
+                                    <p class="overdue-desc">Aşağıdaki ders ödemeleri henüz karşılanamamıştır. En eski tarihten başlayarak listelenmiştir.</p>
+                                    <div class="table-responsive">
+                                        <table class="premium-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Ders</th>
+                                                    <th>Ders Tarihi</th>
+                                                    <th>Branş</th>
+                                                    <th>Tutar</th>
+                                                    <th>Gecikme</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template for:each={overdueItems} for:item="item">
+                                                    <tr key={item.Id}>
+                                                        <td class="font-bold">{item.Name}</td>
+                                                        <td>{item.dateStr}</td>
+                                                        <td>{item.Branch__c}</td>
+                                                        <td class="font-bold text-red">{item.feeFormatted} ₺</td>
+                                                        <td>
+                                                            <span class={item.delayClass}>{item.delayLabel}</span>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <!-- Payments History -->
+                            <div class="section-card glass-card mt-4">
+                                <h2 class="section-title">💳 Yapılan Ödemeler</h2>
+                                <template if:true={payments.length}>
+                                    <div class="table-responsive">
+                                        <table class="premium-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Makbuz</th>
+                                                    <th>Tarih</th>
+                                                    <th>Yöntem</th>
+                                                    <th>Tutar</th>
+                                                    <th>Durum</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template for:each={payments} for:item="p">
+                                                    <tr key={p.Id}>
+                                                        <td class="font-bold">{p.Name}</td>
+                                                        <td>{p.paymentDateStr}</td>
+                                                        <td>{p.Payment_Method__c}</td>
+                                                        <td class="font-bold text-green">{p.amountFormatted} ₺</td>
+                                                        <td><span class="badge-status paid">{p.Status__c}</span></td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </template>
+                                <template if:false={payments.length}>
+                                    <div class="empty-state">Henüz ödeme kaydı bulunmuyor.</div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- ===== TAB: LESSONS ===== -->
                     <template if:true={isLessonsActive}>
                         <div class="tab-content animate-fade">
                             <div class="section-card glass-card">
-                                <h2 class="section-title">📅 {selectedStudent.Name} - Ders Programı & Dökümü</h2>
+                                <h2 class="section-title">📅 {selectedStudent.Name} — Ders Programı</h2>
                                 <template if:true={lessons.length}>
                                     <div class="table-responsive">
                                         <table class="premium-table">
                                             <thead>
                                                 <tr>
-                                                    <th>Ders Başlığı</th>
-                                                    <th>Tarih ve Saat</th>
+                                                    <th>Ders</th>
+                                                    <th>Tarih &amp; Saat</th>
                                                     <th>Branş</th>
                                                     <th>Süre</th>
-                                                    <th>Saatlik Ücret</th>
-                                                    <th>Toplam Tutar</th>
+                                                    <th>Tutar</th>
                                                     <th>Durum</th>
                                                 </tr>
                                             </thead>
@@ -124,17 +219,23 @@
                                                         <td class="font-bold">{lesson.Name}</td>
                                                         <td>{lesson.dateTimeStr}</td>
                                                         <td>{lesson.Branch__c}</td>
-                                                        <td>⏱️ {lesson.Duration_Minutes__c} Dakika</td>
-                                                        <td class="font-bold text-teal">{lesson.rateFormatted} TL</td>
-                                                        <td class="font-bold text-blue">{lesson.feeFormatted} TL</td>
-                                                        <td>
-                                                            <span class="badge badge-mint-mini">{lesson.Status__c}</span>
-                                                        </td>
+                                                        <td>⏱ {lesson.Duration_Minutes__c} dk</td>
+                                                        <td class="font-bold text-purple">{lesson.feeFormatted} ₺</td>
+                                                        <td><span class="badge-status">{lesson.Status__c}</span></td>
                                                     </tr>
                                                 </template>
                                             </tbody>
                                         </table>
                                     </div>
+                                    <!-- Lesson Notes -->
+                                    <template for:each={lessonsWithNotes} for:item="ln">
+                                        <div key={ln.Id} class="lesson-note-box">
+                                            <div class="ln-header">
+                                                <span class="ln-date">📝 {ln.dateShort} — {ln.Branch__c}</span>
+                                            </div>
+                                            <p class="ln-text">{ln.Lesson_Notes__c}</p>
+                                        </div>
+                                    </template>
                                 </template>
                                 <template if:false={lessons.length}>
                                     <div class="empty-state">Kayıtlı ders planı bulunamadı.</div>
@@ -143,11 +244,11 @@
                         </div>
                     </template>
 
-                    <!-- ================= TAB: HOMEWORKS ================= -->
+                    <!-- ===== TAB: HOMEWORKS ===== -->
                     <template if:true={isHomeworksActive}>
                         <div class="tab-content animate-fade">
                             <div class="section-card glass-card">
-                                <h2 class="section-title">📚 {selectedStudent.Name} - Ödev Tamamlama Durumu</h2>
+                                <h2 class="section-title">📚 {selectedStudent.Name} — Ödev Durumu</h2>
                                 <template if:true={homeworks.length}>
                                     <div class="homeworks-grid">
                                         <template for:each={homeworks} for:item="hw">
@@ -157,34 +258,26 @@
                                                     <span class={hw.badgeClass}>{hw.statusText}</span>
                                                 </div>
                                                 <p class="hw-desc">{hw.Description__c}</p>
-                                                
                                                 <div class="hw-meta">
                                                     <span>📅 Son Teslim: {hw.dueDateStr}</span>
-                                                    <span>📐 Ders: {hw.Lesson__r.Name}</span>
                                                 </div>
-
-                                                <!-- Homework Submission Info -->
                                                 <template if:true={hw.Completed_Questions__c}>
                                                     <div class="hw-stats-box">
-                                                        <h5>Öğrenci Çözüm Detayı:</h5>
                                                         <div class="stats-row">
-                                                            <span>📊 Çözülen Soru: <strong>{hw.Completed_Questions__c}</strong></span>
-                                                            <span class="text-green">✔️ Doğru: <strong>{hw.Correct_Answers__c}</strong></span>
-                                                            <span class="text-red">❌ Yanlış: <strong>{hw.Wrong_Answers__c}</strong></span>
+                                                            <span>Çözülen: <strong>{hw.Completed_Questions__c}</strong></span>
+                                                            <span class="text-green">✔ Doğru: <strong>{hw.Correct_Answers__c}</strong></span>
+                                                            <span class="text-red">✘ Yanlış: <strong>{hw.Wrong_Answers__c}</strong></span>
                                                         </div>
                                                         <template if:true={hw.Student_Comment__c}>
-                                                            <p class="comment-text italic"><strong>Öğrencinin Notu:</strong> "{hw.Student_Comment__c}"</p>
+                                                            <p class="comment-text">"<em>{hw.Student_Comment__c}</em>"</p>
                                                         </template>
                                                     </div>
                                                 </template>
-
-                                                <!-- Graded feedback -->
                                                 <template if:true={hw.isGraded}>
                                                     <div class="teacher-feedback-box">
-                                                        <h5>Öğretmen Değerlendirmesi:</h5>
                                                         <p class="grade-label">💯 Puan: <strong>{hw.Grade__c} / 100</strong></p>
                                                         <template if:true={hw.Teacher_Comment__c}>
-                                                            <p class="comment-text"><strong>Öğretmenin Notu:</strong> "{hw.Teacher_Comment__c}"</p>
+                                                            <p class="comment-text"><strong>Öğretmen:</strong> "{hw.Teacher_Comment__c}"</p>
                                                         </template>
                                                     </div>
                                                 </template>
@@ -199,80 +292,39 @@
                         </div>
                     </template>
 
-                    <!-- ================= TAB: EXAMS ================= -->
+                    <!-- ===== TAB: EXAMS ===== -->
                     <template if:true={isExamsActive}>
                         <div class="tab-content animate-fade">
                             <div class="section-card glass-card">
-                                <h2 class="section-title">📈 {selectedStudent.Name} - Deneme Netleri ve Analiz Grafikieri</h2>
-                                
+                                <h2 class="section-title">📈 {selectedStudent.Name} — Deneme Analizi</h2>
                                 <template if:true={exams.length}>
-                                    <!-- Dynamic Progress Bar Visualization Charts -->
-                                    <div class="visual-charts-panel">
-                                        <h4>Son Deneme Sınavları Gelişim Analizi</h4>
-                                        <div class="visual-exam-cards">
-                                            <template for:each={exams} for:item="ex">
-                                                <div key={ex.Id} class="exam-visual-card glass-card">
-                                                    <div class="ex-visual-header">
-                                                        <h5>{ex.Exam_Title__c}</h5>
-                                                        <span class="badge badge-mint-mini">{ex.Score__c}% Başarı</span>
-                                                    </div>
-                                                    
-                                                    <div class="net-bar-container">
-                                                        <div class="bar-label-row">
-                                                            <span>Toplam Net (3/4 Formülüyle)</span>
-                                                            <span class="font-bold text-blue">{ex.totalNetFormatted} Net</span>
-                                                        </div>
-                                                        <div class="bar-outer">
-                                                            <div class="bar-inner total-net-bar" style={ex.totalNetStyle}></div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="net-bar-container">
-                                                        <div class="bar-label-row">
-                                                            <span>Matematik Neti</span>
-                                                            <span class="font-bold text-orange">{ex.mathNetFormatted} Net</span>
-                                                        </div>
-                                                        <div class="bar-outer">
-                                                            <div class="bar-inner math-net-bar" style={ex.mathNetStyle}></div>
-                                                        </div>
-                                                    </div>
+                                    <div class="visual-exam-cards">
+                                        <template for:each={exams} for:item="ex">
+                                            <div key={ex.Id} class="exam-visual-card glass-card">
+                                                <div class="ex-header">
+                                                    <h5>{ex.Exam_Title__c}</h5>
+                                                    <span class="badge-score">{ex.Score__c}%</span>
                                                 </div>
-                                            </template>
-                                        </div>
-                                    </div>
-
-                                    <!-- Table Data -->
-                                    <div class="table-responsive mt-4">
-                                        <table class="premium-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Sınav Başlığı</th>
-                                                    <th>Sınav Tarihi</th>
-                                                    <th>Toplam Soru</th>
-                                                    <th>Doğru</th>
-                                                    <th>Yanlış</th>
-                                                    <th>Mat. Doğru/Yanlış</th>
-                                                    <th>Toplam Net</th>
-                                                    <th>Matematik Net</th>
-                                                    <th>Öğretmen Geribildirimi</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <template for:each={exams} for:item="ex">
-                                                    <tr key={ex.Id}>
-                                                        <td class="font-bold">{ex.Exam_Title__c}</td>
-                                                        <td>{ex.examDateStr}</td>
-                                                        <td>{ex.Total_Questions__c}</td>
-                                                        <td class="text-green font-bold">{ex.Total_Correct__c}</td>
-                                                        <td class="text-red font-bold">{ex.Total_Wrong__c}</td>
-                                                        <td>{ex.Math_Correct__c}D / {ex.Math_Wrong__c}Y</td>
-                                                        <td class="total-net-cell">{ex.totalNetFormatted}</td>
-                                                        <td class="math-net-cell">{ex.mathNetFormatted}</td>
-                                                        <td class="comment-cell">{ex.Teacher_Feedback__c}</td>
-                                                    </tr>
+                                                <p class="ex-date">{ex.examDateStr}</p>
+                                                <div class="net-bar-container">
+                                                    <div class="bar-label-row">
+                                                        <span>Toplam Net</span>
+                                                        <span class="font-bold text-purple">{ex.totalNetFormatted}</span>
+                                                    </div>
+                                                    <div class="bar-outer"><div class="bar-inner total-bar" style={ex.totalNetStyle}></div></div>
+                                                </div>
+                                                <div class="net-bar-container">
+                                                    <div class="bar-label-row">
+                                                        <span>Matematik Net</span>
+                                                        <span class="font-bold text-accent">{ex.mathNetFormatted}</span>
+                                                    </div>
+                                                    <div class="bar-outer"><div class="bar-inner math-bar" style={ex.mathNetStyle}></div></div>
+                                                </div>
+                                                <template if:true={ex.Teacher_Feedback__c}>
+                                                    <p class="ex-feedback">{ex.Teacher_Feedback__c}</p>
                                                 </template>
-                                            </tbody>
-                                        </table>
+                                            </div>
+                                        </template>
                                     </div>
                                 </template>
                                 <template if:false={exams.length}>
@@ -282,111 +334,33 @@
                         </div>
                     </template>
 
-                    <!-- ================= TAB: PAYMENTS ================= -->
-                    <template if:true={isPaymentsActive}>
-                        <div class="tab-content animate-fade">
-                            <!-- Financial Metric Cards -->
-                            <div class="financial-metrics-grid">
-                                <div class="finance-card glass-card font-blue">
-                                    <div class="fin-icon">📊</div>
-                                    <div class="fin-body">
-                                        <h4>Toplam Ders Ücreti</h4>
-                                        <h2>{selectedStudent.Total_Lesson_Fee__c} TL</h2>
-                                    </div>
-                                </div>
-
-                                <div class="finance-card glass-card font-green">
-                                    <div class="fin-icon">✔️</div>
-                                    <div class="fin-body">
-                                        <h4>Toplam Ödenen Miktar</h4>
-                                        <h2>{selectedStudent.Total_Paid_Amount__c} TL</h2>
-                                    </div>
-                                </div>
-
-                                <div class="finance-card glass-card font-red">
-                                    <div class="fin-icon">⚠️</div>
-                                    <div class="fin-body">
-                                        <h4>Güncel Bakiye</h4>
-                                        <h2>{selectedStudent.Balance__c} TL</h2>
-                                        <p class="fin-sub">Tutarın vadesinde ödenmesi rica olunur.</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- List of payments -->
-                            <div class="section-card glass-card mt-4">
-                                <h2 class="section-title">💳 {selectedStudent.Name} - Yapılan Ödemeler</h2>
-                                <template if:true={payments.length}>
-                                    <div class="table-responsive">
-                                        <table class="premium-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Ödeme Makbuzu</th>
-                                                    <th>Ödeme Tarihi</th>
-                                                    <th>Ödeme Türü</th>
-                                                    <th>Tutar</th>
-                                                    <th>Durum</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <template for:each={payments} for:item="p">
-                                                    <tr key={p.Id}>
-                                                        <td class="font-bold">{p.Name}</td>
-                                                        <td>{p.paymentDateStr}</td>
-                                                        <td>{p.Payment_Method__c}</td>
-                                                        <td class="font-bold text-green">{p.amountFormatted} TL</td>
-                                                        <td>
-                                                            <span class="badge badge-mint-mini">{p.Status__c}</span>
-                                                        </td>
-                                                    </tr>
-                                                </template>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </template>
-                                <template if:false={payments.length}>
-                                    <div class="empty-state">Ödeme makbuzu bulunmuyor.</div>
-                                </template>
-                            </div>
-                        </div>
-                    </template>
-
                 </template>
 
-                <!-- ================= TAB: PASSWORD ================= -->
+                <!-- ===== TAB: PASSWORD ===== -->
                 <template if:true={isPasswordActive}>
                     <div class="tab-content animate-fade">
                         <div class="section-card glass-card max-w-sm">
-                            <h2 class="section-title">Veli Giriş Şifresi Güncelleme</h2>
-                            
+                            <h2 class="section-title">🔐 Şifre Güncelle</h2>
                             <template if:true={pwdErrorMsg}>
-                                <div class="error-alert animate-fade mb-4">
-                                    ⚠️ {pwdErrorMsg}
-                                </div>
+                                <div class="alert-error animate-fade">{pwdErrorMsg}</div>
                             </template>
-
                             <template if:true={pwdSuccessMsg}>
-                                <div class="success-alert animate-fade mb-4">
-                                    ✔️ {pwdSuccessMsg}
-                                </div>
+                                <div class="alert-success animate-fade">{pwdSuccessMsg}</div>
                             </template>
-
                             <form class="password-form" onsubmit={handlePasswordSubmit}>
                                 <div class="input-group">
                                     <label class="input-label">Mevcut Şifre</label>
-                                    <input type="password" class="glass-input-custom" value={currentPassword} oninput={handleCurPwd} required />
+                                    <input type="password" class="form-input" value={currentPassword} oninput={handleCurPwd} required />
                                 </div>
                                 <div class="input-group">
                                     <label class="input-label">Yeni Şifre (En az 6 karakter)</label>
-                                    <input type="password" class="glass-input-custom" value={newPassword} oninput={handleNewPwd} required />
+                                    <input type="password" class="form-input" value={newPassword} oninput={handleNewPwd} required />
                                 </div>
                                 <div class="input-group">
                                     <label class="input-label">Yeni Şifre (Tekrar)</label>
-                                    <input type="password" class="glass-input-custom" value={confirmPassword} oninput={handleConfPwd} required />
+                                    <input type="password" class="form-input" value={confirmPassword} oninput={handleConfPwd} required />
                                 </div>
-                                <button type="submit" class="glass-button glow-effect mt-4 w-full">
-                                    Şifremi Güncelle
-                                </button>
+                                <button type="submit" class="btn-submit mt-4">Şifremi Güncelle</button>
                             </form>
                         </div>
                     </div>

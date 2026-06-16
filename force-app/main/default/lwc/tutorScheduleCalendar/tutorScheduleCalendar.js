@@ -20,6 +20,7 @@ export default class TutorScheduleCalendar extends LightningElement {
     @track monthLessons = [];
     @track genStatusMessage = '';
     @track genStatusType = '';
+    @track saveLessonError = '';
 
     get weekDateRangeStr() {
         if (this.weekDays.length === 0) return '';
@@ -125,9 +126,10 @@ export default class TutorScheduleCalendar extends LightningElement {
     handleError(error, customMsg) {
         console.error(customMsg, error);
         const msg = error.body ? error.body.message : error.message;
-        if (msg && msg.includes('Unauthorized')) {
+        if (msg && (msg.includes('doldu') || msg.includes('Unauthorized'))) {
             localStorage.removeItem('sessionToken');
-            window.location.reload(); // Redirect to login
+            localStorage.removeItem('sessionRole');
+            this.dispatchEvent(new CustomEvent('logout', { bubbles: true, composed: true }));
         }
     }
 
@@ -216,7 +218,8 @@ export default class TutorScheduleCalendar extends LightningElement {
             dateInput: '',
             Duration_Minutes__c: 60,
             Hourly_Rate__c: 500,
-            Status__c: 'Scheduled'
+            Status__c: 'Scheduled',
+            Lesson_Notes__c: ''
         };
         this.studentOptions = this.studentOptions.map(opt => ({...opt, selected: false}));
         this.isModalOpen = true;
@@ -296,7 +299,8 @@ export default class TutorScheduleCalendar extends LightningElement {
                 dateInput: localISOTime,
                 Duration_Minutes__c: targetLesson.Duration_Minutes__c,
                 Hourly_Rate__c: targetLesson.Hourly_Rate__c,
-                Status__c: targetLesson.Status__c
+                Status__c: targetLesson.Status__c,
+                Lesson_Notes__c: targetLesson.Lesson_Notes__c || ''
             };
 
             this.studentOptions = this.studentOptions.map(opt => ({
@@ -310,6 +314,7 @@ export default class TutorScheduleCalendar extends LightningElement {
 
     closeModal() {
         this.isModalOpen = false;
+        this.saveLessonError = '';
     }
 
     // On-demand auto generation from Recurring Schedule templates
@@ -320,14 +325,17 @@ export default class TutorScheduleCalendar extends LightningElement {
         
         try {
             const count = await generateWeeklyLessonsFromSchedule({ token: token });
-            this.genStatusMessage = `Önümüzdeki hafta için şablondan ${count} adet ders programı başarıyla oluşturuldu!`;
+            if (count > 0) {
+                this.genStatusMessage = `Önümüzdeki hafta için şablondan ${count} adet yeni ders başarıyla oluşturuldu! ✅`;
+            } else {
+                this.genStatusMessage = `Önümüzdeki hafta için şablon dersleri zaten mevcut. Yeni ders oluşturulmadı. ℹ️`;
+            }
             this.genStatusType = 'success';
-            
-            // Advance to next week's view to see the generated lessons!
+
+            // Navigate to next week's view
             const nextMon = this.getMonday(new Date());
             nextMon.setDate(nextMon.getDate() + 7);
             this.currentDate = nextMon;
-            
             await this.refreshCalendar();
         } catch (error) {
             this.genStatusMessage = error.body ? error.body.message : 'Dersler oluşturulurken bir hata oluştu.';
@@ -354,6 +362,16 @@ export default class TutorScheduleCalendar extends LightningElement {
     }
     
     handleBranchChange(e) { this.currentLesson.Branch__c = e.target.value; }
+
+    get isBranchMatematik() { return this.currentLesson.Branch__c === 'Matematik'; }
+    get isBranchGeometri()  { return this.currentLesson.Branch__c === 'Geometri'; }
+    get isBranchFizik()     { return this.currentLesson.Branch__c === 'Fizik'; }
+    get isBranchKimya()     { return this.currentLesson.Branch__c === 'Kimya'; }
+    get isBranchBiyoloji()  { return this.currentLesson.Branch__c === 'Biyoloji'; }
+    get isBranchTurkce()    { return this.currentLesson.Branch__c === 'Türkçe'; }
+    get isBranchTarih()     { return this.currentLesson.Branch__c === 'Tarih'; }
+    get isBranchIngilizce() { return this.currentLesson.Branch__c === 'İngilizce'; }
+    get isBranchKocluk()    { return this.currentLesson.Branch__c === 'Koçluk'; }
     
     handleDateChange(e) { 
         if (!e.target.value) return;
@@ -379,16 +397,18 @@ export default class TutorScheduleCalendar extends LightningElement {
     handleDurationChange(e) { this.currentLesson.Duration_Minutes__c = e.target.value; }
     handleRateChange(e) { this.currentLesson.Hourly_Rate__c = e.target.value; }
     handleStatusChange(e) { this.currentLesson.Status__c = e.target.value; }
+    handleNotesChange(e) { this.currentLesson.Lesson_Notes__c = e.target.value; }
 
     async saveLesson() {
-        if (!this.currentLesson.Student__c || !this.currentLesson.Date_Time__c || !this.currentLesson.Branch__c) {
-            alert('Lütfen Öğrenci, Branş ve Tarih bilgilerini doldurun.');
+        this.saveLessonError = '';
+        if (!this.currentLesson.Student__c || !this.currentLesson.Date_Time__c || !this.currentLesson.Branch__c || this.currentLesson.Branch__c === '') {
+            this.saveLessonError = 'Lütfen Öğrenci, Branş ve Tarih/Saat bilgilerini seçin.';
             return;
         }
 
         this.isLoading = true;
         const token = localStorage.getItem('sessionToken');
-        
+
         try {
             let record = {
                 sobjectType: 'Lesson__c',
@@ -399,16 +419,21 @@ export default class TutorScheduleCalendar extends LightningElement {
                 Hourly_Rate__c: parseFloat(this.currentLesson.Hourly_Rate__c),
                 Status__c: this.currentLesson.Status__c
             };
-            if (this.isEditMode) {
-                record.Id = this.currentLesson.Id;
-            }
+            const notes = this.currentLesson.Lesson_Notes__c;
+            if (notes) record.Lesson_Notes__c = notes;
+            if (this.isEditMode) record.Id = this.currentLesson.Id;
 
             await upsertLesson({ token: token, lessonData: record });
             this.closeModal();
             this.refreshCalendar();
         } catch (e) {
             console.error('Error saving lesson', e);
-            alert('Kaydedilirken bir hata oluştu.');
+            const msg = (e.body && e.body.message) ? e.body.message : (e.message || 'Bilinmeyen hata oluştu.');
+            if (msg.includes('doldu') || msg.includes('Unauthorized')) {
+                this.handleError(e, 'Oturum hatası');
+            } else {
+                this.saveLessonError = msg;
+            }
         } finally {
             this.isLoading = false;
         }

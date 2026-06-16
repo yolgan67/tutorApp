@@ -1,14 +1,12 @@
 <template>
     <div class="login-wrapper">
         <div class="login-glass-card">
-            <!-- Brand Header -->
             <div class="brand">
-                <div class="logo">📐</div>
-                <h1>TutorSync</h1>
-                <p>Eğitim Takip ve Yönetim Portalı</p>
+                <div class="logo">✏️</div>
+                <h1>Çözüm Köşesi</h1>
+                <p>Öğrenci &amp; Veli Giriş Portalı</p>
             </div>
-            
-            <!-- Error Banner -->
+
             <template if:true={errorMsg}>
                 <div class="error-alert animate-fade">
                     <span class="error-icon">⚠️</span>
@@ -16,47 +14,32 @@
                 </div>
             </template>
 
-            <!-- Loading Spinner Overlay -->
             <template if:true={isLoading}>
                 <div class="spinner-container">
                     <div class="custom-spinner"></div>
-                    <p class="spinner-text">İşlem yapılıyor...</p>
+                    <p class="spinner-text">Kontrol ediliyor...</p>
                 </div>
             </template>
 
-            <!-- ================= STEP 1: EMAIL ENTRY ================= -->
             <template if:false={isStepTwo}>
                 <form class="login-form animate-slide" onsubmit={handleNextStep}>
                     <div class="input-group">
                         <label class="input-label">E-posta Adresi</label>
                         <div class="input-wrapper">
                             <span class="input-icon">✉️</span>
-                            <input 
-                                type="email" 
-                                class="glass-input" 
-                                placeholder="E-posta adresinizi yazın" 
-                                value={username}
-                                oninput={handleUsernameChange} 
-                                required 
-                                disabled={isLoading}
-                            />
+                            <input type="email" class="glass-input" placeholder="E-posta adresinizi yazın"
+                                value={username} oninput={handleUsernameChange} required disabled={isLoading} />
                         </div>
                     </div>
-                    
-                    <button type="submit" class="glass-button glow-effect" disabled={isLoading}>
-                        Sonraki Adım →
-                    </button>
+                    <button type="submit" class="glass-button" disabled={isLoading}>Sonraki Adım →</button>
                 </form>
             </template>
 
-            <!-- ================= STEP 2: PASSWORD ENTRY ================= -->
             <template if:true={isStepTwo}>
                 <div class="welcome-container animate-fade">
-                    <p class="greeting-text">Hoş Geldiniz,</p>
+                    <p class="greeting-text">Hoş Geldiniz</p>
                     <h3 class="user-name">{detectedName}</h3>
-                    <div class={roleBadgeClass}>
-                        {roleLabel} Portalı
-                    </div>
+                    <div class={roleBadgeClass}>{roleLabel} Portalı</div>
                 </div>
 
                 <form class="login-form animate-slide" onsubmit={doLogin}>
@@ -64,26 +47,13 @@
                         <label class="input-label">Giriş Şifresi</label>
                         <div class="input-wrapper">
                             <span class="input-icon">🔐</span>
-                            <input 
-                                type="password" 
-                                class="glass-input" 
-                                placeholder="Şifrenizi yazın" 
-                                value={password}
-                                oninput={handlePasswordChange} 
-                                required 
-                                autofocus
-                                disabled={isLoading}
-                            />
+                            <input type="password" class="glass-input" placeholder="Şifrenizi yazın"
+                                value={password} oninput={handlePasswordChange} required autofocus disabled={isLoading} />
                         </div>
                     </div>
-                    
                     <div class="actions-row">
-                        <button type="button" class="btn-secondary-custom" onclick={handlePrevStep} disabled={isLoading}>
-                            ← Geri Dön
-                        </button>
-                        <button type="submit" class="glass-button glow-effect flex-grow" disabled={isLoading}>
-                            Giriş Yap
-                        </button>
+                        <button type="button" class="btn-secondary-custom" onclick={handlePrevStep} disabled={isLoading}>← Geri</button>
+                        <button type="submit" class="glass-button flex-grow" disabled={isLoading}>Giriş Yap</button>
                     </div>
                 </form>
             </template>

@@ -40,6 +40,21 @@
                 <default>false</default>
                 <label>Türkçe</label>
             </value>
+            <value>
+                <fullName>Koçluk</fullName>
+                <default>false</default>
+                <label>Koçluk</label>
+            </value>
+            <value>
+                <fullName>Biyoloji</fullName>
+                <default>false</default>
+                <label>Biyoloji</label>
+            </value>
+            <value>
+                <fullName>Tarih</fullName>
+                <default>false</default>
+                <label>Tarih</label>
+            </value>
         </valueSetDefinition>
     </valueSet>
 </CustomField>

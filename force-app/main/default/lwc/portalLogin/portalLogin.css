@@ -1,30 +1,38 @@
-/* TutorSync Smart 2-Step Login Stylesheet */
+/* Çözüm Köşesi — Login Card */
 .login-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
     padding: 10px 0;
+    font-family: 'Nunito', sans-serif;
 }
 
 .login-glass-card {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    border-radius: 24px;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
-    padding: 40px 32px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(124, 92, 191, 0.15);
+    border-radius: 28px;
+    box-shadow: 0 16px 48px rgba(124, 92, 191, 0.14);
+    padding: 44px 36px;
     width: 100%;
     max-width: 420px;
     display: flex;
     flex-direction: column;
-    gap: 28px;
+    gap: 24px;
     position: relative;
     overflow: hidden;
 }
+.login-glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #7C5CBF, #A98DE0, #F4A261);
+    border-radius: 28px 28px 0 0;
+}
 
-/* Brand Header */
 .brand {
     text-align: center;
     display: flex;
@@ -32,153 +40,140 @@
     align-items: center;
     gap: 8px;
 }
-
 .logo {
-    font-size: 40px;
-    background: linear-gradient(135deg, #00b4d8, #57cc99);
-    padding: 10px;
-    border-radius: 16px;
+    font-size: 38px;
+    background: linear-gradient(135deg, rgba(124,92,191,0.12), rgba(244,162,97,0.12));
+    padding: 12px;
+    border-radius: 18px;
     line-height: 1;
-    color: white;
-    box-shadow: 0 4px 15px rgba(0, 180, 216, 0.2);
+    border: 1px solid rgba(124,92,191,0.15);
 }
-
 .brand h1 {
-    font-size: 26px;
-    font-weight: 800;
-    margin: 4px 0 0 0;
+    font-size: 24px;
+    font-weight: 900;
+    margin: 4px 0 0;
     letter-spacing: -0.5px;
-    color: #1a202c;
+    background: linear-gradient(135deg, #5B3FA0, #7C5CBF, #F4A261);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
-
 .brand p {
     font-size: 13px;
-    color: #718096;
+    color: #8B7BA8;
     margin: 0;
+    font-weight: 600;
 }
 
-/* Form Styles */
 .login-form {
     display: flex;
     flex-direction: column;
     gap: 20px;
     width: 100%;
 }
-
 .input-group {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
-
 .input-label {
-    font-size: 13px;
-    font-weight: 700;
-    color: #4a5568;
-    letter-spacing: 0.5px;
+    font-size: 12px;
+    font-weight: 800;
+    color: #5B3FA0;
+    letter-spacing: 0.6px;
     text-transform: uppercase;
 }
-
 .input-wrapper {
     position: relative;
     display: flex;
     align-items: center;
 }
-
 .input-icon {
     position: absolute;
     left: 14px;
     font-size: 16px;
-    color: #a0aec0;
 }
-
 .glass-input {
     width: 100%;
-    padding: 12px 16px 12px 42px;
+    padding: 13px 16px 13px 44px;
     border-radius: 14px;
-    border: 1px solid rgba(226, 232, 240, 0.8);
-    background: rgba(255, 255, 255, 0.9);
+    border: 1.5px solid rgba(124,92,191,0.2);
+    background: rgba(253,248,240,0.6);
     font-size: 14px;
-    color: #2d3748;
-    transition: all 0.3s ease;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    color: #3D2B5F;
+    transition: all 0.3s;
+    box-sizing: border-box;
 }
-
 .glass-input:focus {
     outline: none;
-    border-color: #00b4d8;
-    background: #ffffff;
-    box-shadow: 0 0 0 4px rgba(0, 180, 216, 0.12);
+    border-color: #7C5CBF;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(124,92,191,0.12);
 }
+.glass-input::placeholder { color: #C4B5DA; }
 
-/* Buttons */
 .glass-button {
-    background: linear-gradient(135deg, #00b4d8, #57cc99);
-    color: #ffffff;
+    background: linear-gradient(135deg, #7C5CBF, #A98DE0);
+    color: #fff;
     border: none;
     border-radius: 14px;
     padding: 14px 20px;
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 800;
+    font-family: 'Nunito', sans-serif;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0, 180, 216, 0.3);
-    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(124,92,191,0.3);
+    transition: all 0.3s;
     text-align: center;
 }
-
 .glass-button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(0, 180, 216, 0.45);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(124,92,191,0.45);
+}
+.glass-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .btn-secondary-custom {
-    background: #edf2f7;
-    color: #4a5568;
-    border: none;
+    background: rgba(124,92,191,0.07);
+    color: #7C5CBF;
+    border: 1.5px solid rgba(124,92,191,0.2);
     border-radius: 14px;
     padding: 14px 20px;
     font-size: 14px;
     font-weight: 700;
+    font-family: 'Nunito', sans-serif;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s;
 }
-
 .btn-secondary-custom:hover {
-    background: #e2e8f0;
-    color: #2d3748;
+    background: rgba(124,92,191,0.12);
+    border-color: #7C5CBF;
 }
 
-.actions-row {
-    display: flex;
-    gap: 12px;
-}
+.actions-row { display: flex; gap: 12px; }
+.flex-grow { flex-grow: 1; }
 
-.flex-grow {
-    flex-grow: 1;
-}
-
-/* Error Banner */
 .error-alert {
     display: flex;
     align-items: center;
     gap: 10px;
-    background: #fff5f5;
-    border: 1px solid #fed7d7;
-    color: #c53030;
+    background: #FFF0F0;
+    border: 1px solid #FFC9C9;
+    color: #C53030;
     padding: 12px 16px;
-    border-radius: 14px;
+    border-radius: 12px;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
 }
 
-/* Spinner Overlay */
 .spinner-container {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.85);
+    inset: 0;
+    background: rgba(255,255,255,0.88);
     backdrop-filter: blur(4px);
     z-index: 100;
     display: flex;
@@ -186,96 +181,63 @@
     justify-content: center;
     align-items: center;
     gap: 12px;
+    border-radius: 28px;
 }
-
 .custom-spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid rgba(87, 204, 153, 0.1);
-    border-top-color: #57cc99;
+    width: 40px; height: 40px;
+    border: 4px solid rgba(124,92,191,0.1);
+    border-top-color: #7C5CBF;
     border-radius: 50%;
-    animation: spin 1s linear infinite;
+    animation: spin 0.9s linear infinite;
 }
-
 .spinner-text {
     font-size: 13px;
     font-weight: 700;
-    color: #57cc99;
+    color: #7C5CBF;
     margin: 0;
 }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-/* Step 2 Greetings */
 .welcome-container {
     text-align: center;
-    background: rgba(87, 204, 153, 0.08);
-    border: 1px solid rgba(87, 204, 153, 0.15);
+    background: rgba(124,92,191,0.06);
+    border: 1px solid rgba(124,92,191,0.14);
     border-radius: 16px;
-    padding: 16px;
+    padding: 18px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
 }
-
 .greeting-text {
     font-size: 12px;
-    color: #718096;
+    color: #8B7BA8;
     margin: 0;
     text-transform: uppercase;
     font-weight: 700;
+    letter-spacing: 0.5px;
 }
-
 .user-name {
-    font-size: 18px;
-    font-weight: 800;
-    color: #2d3748;
+    font-size: 20px;
+    font-weight: 900;
+    color: #3D2B5F;
     margin: 0;
 }
 
-/* Badges */
 .role-badge {
     font-size: 11px;
     font-weight: 800;
-    padding: 4px 10px;
+    padding: 4px 12px;
     border-radius: 20px;
     margin-top: 4px;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
+.role-badge.student { background: rgba(124,92,191,0.1); color: #5B3FA0; }
+.role-badge.parent  { background: rgba(244,162,97,0.12); color: #B85C14; }
+.role-badge.teacher { background: rgba(34,197,94,0.1); color: #15803D; }
 
-.role-badge.student {
-    background: #e0f2fe;
-    color: #0369a1;
-}
-
-.role-badge.parent {
-    background: #dcfce7;
-    color: #15803d;
-}
-
-.role-badge.teacher {
-    background: #fef3c7;
-    color: #b45309;
-}
-
-/* Animations */
-.animate-fade {
-    animation: fadeIn 0.4s ease;
-}
-
-.animate-slide {
-    animation: slideIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes slideIn {
-    from { transform: translateY(15px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
+.animate-fade { animation: fadeIn 0.4s ease; }
+.animate-slide { animation: slideIn 0.3s ease; }
+@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideIn { from { transform: translateY(14px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
